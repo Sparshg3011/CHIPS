@@ -1,0 +1,8 @@
+# Static site: no build step. The prototype is the home page; the pitch film lives at /pitch/.
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/pitch/vo/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
