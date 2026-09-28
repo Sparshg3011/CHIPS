@@ -1,0 +1,1207 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CHIPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Shantell+Sans:wght@400;600;700;800&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --desk:#0C1320; --panel:#131C2C; --panel2:#1A2438; --line:#28334B;
+  --txt:#E9EDF5; --mute:#97A2B7; --vio:#A791FF; --vio-d:#7453EE;
+  --hand:"Shantell Sans","Comic Neue","Segoe Print","Chalkboard SE",system-ui,sans-serif;
+  --ui:Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+html,body{background:var(--desk)}
+body{color:var(--txt);font:16px/1.55 var(--ui);padding-inline:16px;padding-block:20px 56px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin:0;font:800 24px/1 var(--hand);letter-spacing:-.01em}
+.brand svg{width:26px;height:26px;flex:none}
+.meta{margin:0;color:var(--mute);font-size:14px}
+
+.player{display:flex;flex-direction:column}
+.screen{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;border-radius:16px;overflow:hidden;background:#FCFBF7;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.07);cursor:pointer}
+#stage{display:block;width:100%;height:100%}
+.cta{position:absolute;left:50%;bottom:5.5%;translate:-50% 0;display:flex;align-items:center;gap:.55em;
+  font:800 clamp(13px,1.7vw,21px)/1 var(--hand);color:#fff;background:#17223A;border:0;border-radius:999px;
+  padding:.85em 1.45em .85em 1.2em;box-shadow:0 14px 34px -8px rgba(23,34,58,.55);cursor:pointer;animation:nudge 2.2s ease-in-out infinite}
+.cta[hidden],.fsb[hidden],.snd[hidden]{display:none}
+.snd{position:absolute;top:4%;right:3%;display:flex;align-items:center;gap:.5em;font:700 clamp(12px,1.6vw,16px)/1 var(--ui);
+  color:#fff;background:#7453EE;border:0;border-radius:999px;padding:.75em 1.15em;cursor:pointer;box-shadow:0 10px 26px -8px rgba(46,35,102,.6)}
+.snd svg{width:1.25em;height:1.25em;fill:currentColor}
+.cta svg{width:1.1em;height:1.1em;fill:currentColor}
+.cta:hover{background:#26335A}
+@keyframes nudge{50%{scale:1.05}}
+
+.bar{display:flex;gap:4px;margin-top:16px}
+.seg{flex:var(--w) 1 0;height:7px;min-width:0;border-radius:4px;background:#243049;border:0;padding:0;cursor:pointer;position:relative;overflow:hidden}
+.seg:hover{background:#33405E}
+.seg i{position:absolute;inset:0;background:var(--vio);transform-origin:0 50%;transform:scaleX(0)}
+.controls{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--panel2);
+  border:1px solid var(--line);color:var(--txt);cursor:pointer;transition:background .15s}
+.btn:hover{background:#243049}
+.btn svg{width:20px;height:20px;fill:currentColor}
+.btn.primary{width:54px;height:54px;background:var(--txt);color:var(--desk);border-color:transparent}
+.btn.primary:hover{background:#fff}
+.btn.primary svg{width:24px;height:24px}
+.now{display:flex;flex-direction:column;gap:2px;flex:1 1 180px;min-width:0;padding-left:6px}
+.now small{color:var(--vio);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.now b{font:700 19px/1.25 var(--hand);overflow-wrap:anywhere}
+.time{color:var(--mute);font-size:14px;font-variant-numeric:tabular-nums}
+.fsb{display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:22px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);font:600 14px var(--ui);cursor:pointer}
+.fsb:hover{background:#243049}
+.fsb svg{width:18px;height:18px;fill:currentColor}
+.narr-wrap{margin-top:18px;display:flex;flex-direction:column;gap:6px}
+.narr-k{margin:0;color:var(--mute);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.narr{margin:0;font-size:clamp(17px,1.9vw,22px);line-height:1.5;max-width:64ch;min-height:4.5em;text-wrap:pretty}
+.narr.show{animation:nf .6s ease-out both}
+@keyframes nf{from{opacity:0;translate:0 6px}}
+
+.chap h2{margin:0 0 12px;font:800 20px/1.2 var(--hand)}
+.chap ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.ch{width:100%;height:100%;display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;padding:12px 14px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line);color:var(--txt);cursor:pointer;font:inherit;transition:border-color .15s,background .15s}
+.ch:hover{background:var(--panel2)}
+.ch[aria-current="step"]{border-color:var(--vio);background:#1B2140}
+.ch-n{grid-column:1;color:var(--vio);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.ch-d{grid-column:2;grid-row:1;color:var(--mute);font-size:13px;font-variant-numeric:tabular-nums}
+.ch-t{grid-column:1/-1;font:700 17px/1.3 var(--hand)}
+.keys{margin:0;color:var(--mute);font-size:14px}
+.keys kbd{font:600 12px var(--ui);background:var(--panel2);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 7px;color:var(--txt)}
+:focus-visible{outline:2px solid var(--vio);outline-offset:3px}
+
+.player:fullscreen{background:var(--desk);padding:2.5vh 3vw;justify-content:center;overflow:auto}
+.player:fullscreen > *{width:min(100%,calc((100vh - 230px) * 16 / 9));margin-inline:auto}
+.player:fullscreen .screen{flex:none}
+@media (max-width:560px){ .fsb span{display:none} .fsb{padding:0 13px} .time{display:none} }
+
+/* ---------- stage ---------- */
+#stage text{font-family:var(--hand)}
+#stage text.ui{font-family:var(--ui)}
+#stage text.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+#stage .rs{stroke-linecap:round;stroke-linejoin:round}
+.sc{opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+.sc.on{opacity:1;visibility:visible;transition:opacity .45s ease}
+.sc.out{opacity:0;visibility:visible;transition:opacity .45s ease}
+
+.sc g[class],.sc rect[class]{transform-box:fill-box;transform-origin:50% 50%}
+.sc .grow{transform-origin:50% 100%}
+.sc .growX,.sc .drain{transform-origin:0% 50%}
+.sc .spin,.sc .spinS{transform-box:view-box;transform-origin:0 0}
+.draw .rs{stroke-dasharray:100 100}
+
+.sc:is(.on,.out) .fade{animation:fade .7s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .lift{animation:lift 1s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .rise{animation:rise .8s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .drop{animation:drop .9s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .drop2{animation:drop2 .75s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .pop{animation:pop .7s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .inL{animation:inL .75s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .inR{animation:inR .75s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .grow{animation:grow .8s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .growX{animation:growX .9s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .dim{animation:dim .8s var(--d,0s) ease both}
+.sc:is(.on,.out) .hl{animation:hl .6s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .stamp{animation:stamp .5s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .spinIn{animation:spinIn .9s var(--d,0s) cubic-bezier(.2,.8,.2,1) both}
+.sc:is(.on,.out) .draw .rs{animation:draw 1.2s var(--d,0s) ease-out both}
+.sc:is(.on,.out) .draw .rf{animation:fade .6s calc(var(--d,0s) + .45s) ease-out both}
+.sc:is(.on,.out) .draw .ah{animation:draw .35s calc(var(--d,0s) + .8s) ease-out both}
+.sc:is(.on,.out) .wig{animation:wig 1.3s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .wig2{animation:wig2 2.6s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .bob{animation:bob 2.6s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .twinkle{animation:twinkle 1.8s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .pulse{animation:pulse 2.4s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .ring{animation:ring 1.6s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .hop{animation:hop 1.3s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .shake{animation:shake .7s var(--d,0s) linear infinite}
+.sc:is(.on,.out) .blink{animation:blink 1s var(--d,0s) steps(2,jump-none) infinite}
+.sc:is(.on,.out) .blink2{animation:blink2 3.2s var(--d,0s) ease-in-out infinite}
+.sc:is(.on,.out) .spin{animation:spin 2.2s var(--d,0s) linear infinite}
+.sc:is(.on,.out) .spinS{animation:spin 14s var(--d,0s) linear infinite}
+.sc:is(.on,.out) .scan{animation:scan 3.4s var(--d,0s) linear both}
+.sc:is(.on,.out) .drain{animation:drain 8s var(--d,0s) linear both}
+.sc:is(.on,.out) .drain .rf{animation:drainc 8s var(--d,0s) linear both}
+.sc:is(.on,.out) .fly{animation:fly .95s var(--d,0s) cubic-bezier(.45,0,.75,1) both}
+.sc:is(.on,.out) .feed{animation:feed 1.4s var(--d,0s) ease-in 3 both}
+.sc:is(.on,.out) .cursor{animation:cursor 2.4s var(--d,0s) ease-in-out both}
+.sc:is(.on,.out) .travel{animation:travel 2.9s var(--d,0s) linear both}
+.sc:is(.on,.out) .conf{animation:conf var(--du,4s) var(--d,0s) linear infinite both}
+
+@keyframes fade{from{opacity:0}}
+@keyframes lift{from{transform:translateY(28px)}}
+@keyframes rise{from{opacity:0;transform:translateY(34px)}}
+@keyframes drop{0%{opacity:0;transform:translateY(-90px)}60%{opacity:1;transform:translateY(8px)}80%{transform:translateY(-4px)}100%{transform:none}}
+@keyframes drop2{0%{opacity:0;transform:translateY(-60px)}70%{opacity:1;transform:translateY(5px)}100%{transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}55%{opacity:1;transform:scale(1.08)}78%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes inL{from{opacity:0;transform:translateX(-90px)}}
+@keyframes inR{from{opacity:0;transform:translateX(90px)}}
+@keyframes grow{from{transform:scaleY(0)}}
+@keyframes growX{from{transform:scaleX(0)}}
+@keyframes dim{to{opacity:.42}}
+@keyframes hl{from{opacity:0;transform:scale(.96)}}
+@keyframes stamp{0%{opacity:0;transform:scale(2.2)}60%{opacity:1;transform:scale(.94)}100%{transform:scale(1)}}
+@keyframes spinIn{from{opacity:0;transform:rotate(-140deg) scale(.2)}}
+@keyframes draw{from{stroke-dashoffset:100}}
+@keyframes wig{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes wig2{0%,100%{transform:rotate(0)}50%{transform:rotate(2.5deg)}}
+@keyframes bob{50%{transform:translateY(-10px)}}
+@keyframes twinkle{0%,100%{opacity:1;transform:scale(1) rotate(0)}50%{opacity:.35;transform:scale(.6) rotate(45deg)}}
+@keyframes pulse{50%{opacity:.3}}
+@keyframes ring{0%,45%,100%{transform:rotate(0)}5%,15%,25%,35%{transform:rotate(-12deg)}10%,20%,30%,40%{transform:rotate(12deg)}}
+@keyframes hop{0%,55%,100%{transform:translateY(0)}28%{transform:translateY(-16px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2.5px)}75%{transform:translateX(2.5px)}}
+@keyframes blink{50%{opacity:.15}}
+@keyframes blink2{0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes scan{0%{transform:translateY(0);opacity:0}8%,90%{opacity:1}100%{transform:translateY(470px);opacity:0}}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(.03)}}
+@keyframes drainc{0%{fill:#2FA35C}55%{fill:#F1B43C}100%{fill:#E0524B}}
+@keyframes fly{0%{opacity:0;transform:translate(0,0) rotate(0)}15%{opacity:1}100%{opacity:1;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+@keyframes feed{0%{opacity:0;transform:translate(0,0) scale(1)}15%,80%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.4)}}
+@keyframes cursor{0%{opacity:0;transform:translate(0,0)}8%{opacity:1}22%,34%{transform:translate(var(--x1),var(--y1))}50%,62%{transform:translate(var(--x2),var(--y2))}78%,100%{opacity:1;transform:translate(var(--x3),var(--y3))}}
+@keyframes travel{0%{opacity:0;transform:translate(0,0)}6%{opacity:1}100%{opacity:1;transform:translate(var(--x),var(--y))}}
+@keyframes conf{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--x),980px) rotate(var(--r))}}
+
+#stage.paused .sc *{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){
+  #stage .sc *{animation-duration:1ms!important;animation-delay:0s!important;animation-iteration-count:1!important}
+  .cta,.narr.show{animation:none}
+}
+
+.demo{position:absolute;left:6.9%;bottom:5.4%;display:flex;align-items:center;gap:.5em;font:800 clamp(12px,1.55vw,19px)/1 var(--hand);
+  color:#fff;background:#7453EE;border-radius:999px;padding:.8em 1.3em;text-decoration:none;box-shadow:0 14px 34px -8px rgba(46,35,102,.6);animation:nudge 2.2s ease-in-out infinite}
+.demo:hover{background:#5E3FD6}
+.demo[hidden]{display:none}
+.tryit{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:20px;background:var(--vio-d);color:#fff;font:700 14px var(--ui);text-decoration:none}
+.tryit:hover{background:#5E3FD6}
+.topR{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+</style>
+
+<main class="wrap">
+  <header class="top">
+    <h1 class="brand"><svg viewBox="-22 -22 44 44" aria-hidden="true"><path d="M0,-20 Q2.6,-2.6 20,0 Q2.6,2.6 0,20 Q-2.6,2.6 -20,0 Q-2.6,-2.6 0,-20 Z" fill="#A791FF"/></svg>CHIPS</h1>
+    <div class="topR"><p class="meta" id="meta">An animated pitch</p><a class="tryit" href="../" target="_blank" rel="noopener">Try the prototype ↗</a></div>
+  </header>
+
+  <section class="player" id="player" aria-label="Pitch film player">
+    <div class="screen" id="screen">
+      <svg id="stage" viewBox="0 0 1600 900" role="img" aria-label="Hand-drawn animation of the current scene; the narration below describes it" preserveAspectRatio="xMidYMid meet"></svg>
+      <button class="cta" id="cta" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span id="ctaT">Play the story</span></button>
+      <a class="demo" id="demo" href="../" target="_blank" rel="noopener" hidden>Open the live prototype ↗</a>
+      <button class="snd" id="snd" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>Tap for sound</button>
+    </div>
+    <div class="bar" id="bar"></div>
+    <div class="controls">
+      <button class="btn" id="prev" type="button" aria-label="Previous scene"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg></button>
+      <button class="btn primary" id="play" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIcon" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+      <button class="btn" id="next" type="button" aria-label="Next scene"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg></button>
+      <button class="btn" id="vo" type="button" aria-pressed="true" aria-label="Turn narration off" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path id="voIcon" d="M4 9v6h4l5 4V5L8 9H4z"/></svg></button>
+      <div class="now"><small id="nowN">Title</small><b id="nowT">CHIPS</b></div>
+      <span class="time" id="time">0:00</span>
+      <button class="fsb" id="fs" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg><span>Fullscreen</span></button>
+    </div>
+    <div class="narr-wrap">
+      <p class="narr-k">Narration</p>
+      <p class="narr" id="narr" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="chap" aria-labelledby="chapH">
+    <h2 id="chapH">Scenes</h2>
+    <ol id="chapters"></ol>
+  </section>
+  <p class="keys"><kbd>Space</kbd> play or pause · <kbd>←</kbd> <kbd>→</kbd> previous or next scene · <kbd>F</kbd> fullscreen · <kbd>M</kbd> voice on or off · click the picture to pause</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const C = {ink:'#17223A',paper:'#FCFBF7',cocoa:'#6E4126',caramel:'#C58A55',cream:'#F6E7D6',hair:'#3B2416',
+  blue:'#2F6FE4',blueL:'#DCE8FF',violet:'#7453EE',violetL:'#ECE6FF',violetD:'#2E2366',teal:'#0F9E8C',tealL:'#D5F3EE',
+  green:'#2FA35C',greenL:'#D9F1E1',red:'#E0524B',redL:'#F7D3D0',amber:'#F1B43C',muted:'#66728A',slate:'#E4E9F2',w:'#FFFFFF'};
+
+/* ---------- scene list ---------- */
+const SCN = [
+ {title:'CHIPS', dur:12, narr:'CHIPS, the Cloud and Hardware Integration Platform for Small Software. It’s an agentic forward deployed engineer: a layer between software vendors and their customers that handles discovery, customization, deployment, integration and support.'},
+ {title:'The customer need', dur:13, narr:'Meet Cocoa&Co., a growing bakery that built a website and immediately got flooded with orders. They desperately need data tools to track profit, margins, and bestsellers, but don’t know where to turn.'},
+ {title:'The seller bottleneck', dur:14, narr:'On the other side, we have DataVis, a 2-person analytics startup with world-class visualization tools. They have great tech, but zero bandwidth to negotiate, scope custom integrations, or tailor products for non-technical buyers.'},
+ {title:'Who we serve & the evidence', dur:20, narr:'We serve two customers: small businesses whose workflow doesn’t fit off-the-shelf software, and small software teams with no services team. In Capterra’s October 2025 survey of 3,385 buyers, 66% hit regret or disruption, mostly during implementation. Big companies fix this with forward deployed engineers, a role whose postings grew 800% in 2025. Small vendors can’t.'},
+ {title:'A fourth option', dur:13, narr:'Today a team like Cocoa&Co. gets three options: adapt to generic SaaS, pay for custom engineering, or build and maintain internal tools. CHIPS adds a fourth: a reusable product, adapted to each customer’s actual workflow.'},
+ {title:'Discovery & matchmaking', dur:14, narr:'That’s where CHIPS comes in. Cocoa&Co. submits their query, our system reasons over their exact operational needs, and automatically matches them with DataVis.'},
+ {title:'Agent deployment & sandbox', dur:15, narr:'We deploy an AI agent into DataVis’s codebase. It learns the tools and spins up a dedicated playground where Cocoa&Co. can chat, test interactive software mocks, and select only the 3 specific services they need.'},
+ {title:'Scoping & handshake', dur:14, narr:'The agent handles technical negotiations and outputs a complete CSRS specification for quick human verification and pricing. The deal is closed seamlessly without consuming engineering hours.'},
+ {title:'Integration & fulfillment', dur:15, narr:'Finally, post-deal fulfillment is automated. Whether modifying the seller’s dashboard view or directly embedding MCP or API integrations into the buyer’s codebase, our agent handles the setup end to end.'},
+ {title:'After go-live', dur:15, narr:'After launch, the agent stays on both sides. It turns Cocoa&Co.’s change requests into tested configuration, checks every customization against new DataVis releases, and flags repeated requests that should become core features.'},
+ {title:'The stack', dur:15, narr:'The small-software cloud makes customization technically safe. The agent makes it operationally accessible. The unit of work becomes a workflow for one customer, built on the seller’s product and kept compatible through every upgrade.'},
+ {title:'Why we win', dur:15, narr:'Every alternative solves only part of this. Marketplaces stop at the sale. Agencies write custom code that forks. AI app builders start from scratch, and you maintain it. Human forward deployed engineers work, but only for six-figure contracts. We customize the vendor’s own product, test every change, and carry it through upgrades, on a bakery’s budget.'},
+ {title:'Business model', dur:16, narr:'Who pays? Sellers pay a 15% success fee on a deal’s first year, only when it closes. Each live customization adds a $49 monthly care fee to the buyer’s price. On a $300-a-month plan, Cocoa&Co. pays $4,188 in year one, DataVis keeps $3,060 it would have turned away, and we earn $1,128, with zero engineering hours spent.'},
+ {title:'The opportunity', dur:14, narr:'That makes small deals economical on both sides, and opens a long tail of specialized software businesses too small to run their own sales engineering, professional services and customer success teams.'},
+ {title:'First 100 customers', dur:16, narr:'Our first 100 customers come in three steps. First, we sign ten small software vendors as design partners, and run their first deals ourselves, concierge style. Second, each vendor hands us the requests they’ve been turning away. Ten each makes a hundred buyers. Third, we list on marketplaces small businesses already use, starting with the Shopify App Store.'},
+ {title:'Prototype & what’s next', dur:16, narr:'Our clickable prototype runs the full loop: intake, matching, a live sandbox, an auto-generated spec, deployment and support. Try it yourself. Next come 20 buyer and 20 vendor interviews, then three concierge pilots, and our first paid deployments within 90 days, measuring time to go-live and requests handled without an engineer.'},
+ {title:'The close', dur:10, narr:'The winning product won’t promise arbitrary changes. It creates a constrained environment where a large, useful class of changes can be made safely, tested automatically, and carried forward through upgrades.'}
+];
+
+/* ---------- narration ---------- */
+// Seconds of voice per scene; clips live at vo/s00.mp3 … vo/s16.mp3. Empty = no narration files.
+const VO_DUR = [15.75, 11.78, 13.87, 25.05, 15.83, 10.87, 14.47, 12.62, 13.27, 14.03, 13.66, 20.85, 24.27, 11.91, 20.79, 19.88, 12.02];
+const HAS_VO = VO_DUR.length === SCN.length;
+let narrOn = HAS_VO;
+const dur = i => (narrOn && HAS_VO) ? Math.max(SCN[i].dur, VO_DUR[i] + 1.3) : SCN[i].dur;
+
+/* ---------- svg string helpers ---------- */
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const at = o => Object.entries(o).filter(([,v]) => v !== undefined && v !== null && v !== false).map(([k,v]) => `${k}="${v}"`).join(' ');
+function sh(tag, a, o = {}) {
+  return `<${tag} ${at({...a, class:['r', o.cls].filter(Boolean).join(' '), fill:o.fill || 'none', stroke:o.stroke || C.ink,
+    'stroke-width':o.sw || 3, 'data-r':o.r, 'data-fs':o.fs, 'data-arrow':o.arrow, 'data-dash':o.dash, 'data-gap':o.gap,
+    opacity:o.op, transform:o.tf})}/>`;
+}
+const rect = (x,y,w,h,o={}) => sh('rect',{x,y,width:w,height:h,rx:o.rx},o);
+const circ = (cx,cy,r,o={}) => sh('circle',{cx,cy,r},o);
+const ell  = (cx,cy,rx,ry,o={}) => sh('ellipse',{cx,cy,rx,ry},o);
+const ln   = (x1,y1,x2,y2,o={}) => sh('line',{x1,y1,x2,y2},o);
+const pth  = (d,o={}) => sh('path',{d},o);
+const poly = (p,o={}) => sh('polygon',{points:p},o);
+const pl   = (p,o={}) => sh('polyline',{points:p},o);
+function T(x, y, s, o = {}) {
+  const f = o.f === 'ui' ? 'ui' : o.f === 'mono' ? 'mono' : 'hand';
+  return `<text ${at({x, y, class:[f, o.cls].filter(Boolean).join(' '), 'font-size':o.size || 24, 'font-weight':o.w || 600,
+    fill:o.fill || C.ink, 'text-anchor':o.anchor, 'letter-spacing':o.ls, transform:o.tf, opacity:o.op, 'data-t':o.t, 'data-cps':o.cps})}>${o.raw ? s : esc(s)}</text>`;
+}
+const A = (cls, d, inner, tf) => `<g${tf ? ` transform="${tf}"` : ''}><g class="${cls}" style="--d:${d}s">${inner}</g></g>`;
+const U = (id, x = 0, y = 0, s = 1, flip = false) => `<use href="#${id}" transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})"/>`;
+const cnt = (from, to, t, dur, suf = '') => `<tspan class="count" data-from="${from}" data-to="${to}" data-t="${t}" data-dur="${dur}" data-suf="${suf}">${to}${suf}</tspan>`;
+const rrp = (x,y,w,h,r) => { r = Math.min(r, w/2, h/2); return `M${x+r},${y} L${x+w-r},${y} Q${x+w},${y} ${x+w},${y+r} L${x+w},${y+h-r} Q${x+w},${y+h} ${x+w-r},${y+h} L${x+r},${y+h} Q${x},${y+h} ${x},${y+h-r} L${x},${y+r} Q${x},${y} ${x+r},${y} Z`; };
+const rrTop = (x,y,w,h,r) => `M${x},${y+h} L${x},${y+r} Q${x},${y} ${x+r},${y} L${x+w-r},${y} Q${x+w},${y} ${x+w},${y+r} L${x+w},${y+h} Z`;
+const tick = (x, y, col = C.teal, s = 1) => `<path d="M${x-7*s},${y} l${5*s},${6*s} l${11*s},${-13*s}" fill="none" stroke="${col}" stroke-width="${4.5*s}" stroke-linecap="round" stroke-linejoin="round"/>`;
+function starPts(cx, cy, R, r, n) { const p = []; for (let i = 0; i < n * 2; i++) { const a = Math.PI * i / n - Math.PI / 2, rr = i % 2 ? r : R; p.push(`${(cx + rr * Math.cos(a)).toFixed(1)},${(cy + rr * Math.sin(a)).toFixed(1)}`); } return p.join(' '); }
+const actLabel = i => A('fade', 0, T(64, 80, 'ACT ' + i, {size:17, w:800, fill:C.muted, ls:3, f:'ui'}) + T(62, 122, SCN[i].title, {size:38, w:800}));
+
+/* ---------- reusable drawings ---------- */
+function DEFS() {
+  const I = C.ink;
+  const faceHappy = `<circle cx="-11" cy="-3" r="3.8" fill="${I}"/><circle cx="11" cy="-3" r="3.8" fill="${I}"/>` + pth('M-13,9 Q0,21 13,9', {sw:3, r:.4});
+  const faceJoy = pth('M-18,0 Q-11,-10 -4,0', {sw:3, r:.3}) + pth('M4,0 Q11,-10 18,0', {sw:3, r:.3}) + pth('M-14,8 Q0,27 14,8 Z', {fill:I, sw:2, r:.3});
+  const faceWorried = `<circle cx="-11" cy="-1" r="3.8" fill="${I}"/><circle cx="11" cy="-1" r="3.8" fill="${I}"/>` +
+    ln(-19,-9,-6,-14,{sw:2.5,r:.3}) + ln(19,-9,6,-14,{sw:2.5,r:.3}) + pth('M-11,16 Q-6,9 0,14 Q6,19 11,12', {sw:3, r:.3});
+  const bakerPose = (id, arms, face) => `<g id="${id}"><use href="#baker-body"/>${arms}<g transform="translate(0 -222)"><use href="#baker-head"/><use href="#${face}"/></g></g>`;
+  const hip = pl('-22,-164 -46,-128 -26,-100');
+  let stripes = '';
+  for (let i = 0; i < 8; i++) { const x0 = 20 + 40 * i; stripes += pth(`M${x0},68 L${x0+40},68 L${x0+40},124 Q${x0+20},150 ${x0},124 Z`, {fill: i % 2 ? C.cream : C.cocoa, sw:2.5}); }
+  let cakes = '';
+  [52, 88, 124, 160].forEach(x => { cakes += poly(`${x-12},262 ${x+12},262 ${x+9},280 ${x-9},280`, {fill:C.caramel, sw:2}) + pth(`M${x-14},263 Q${x},236 ${x+14},263 Z`, {fill:C.cocoa, sw:2}); });
+  [62, 112, 162].forEach(x => { cakes += ell(x, 314, 20, 12, {fill:C.caramel, sw:2}); });
+  cakes += pth('M44,364 Q72,330 102,364 Q72,350 44,364 Z', {fill:'#D99A5B', sw:2}) + rect(122,338,60,28,{fill:C.cocoa, sw:2}) + rect(122,334,60,9,{fill:C.cream, sw:2});
+  return `
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#E7ECF4" stroke-width="1.2"/></pattern>
+  <pattern id="grid5" width="200" height="200" patternUnits="userSpaceOnUse"><path d="M200 0H0V200" fill="none" stroke="#DCE3EE" stroke-width="1.6"/></pattern>
+  <filter id="blur" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="18"/></filter>
+  <g id="face-happy">${faceHappy}</g><g id="face-joy">${faceJoy}</g><g id="face-worried">${faceWorried}</g>
+  <g id="baker-head">${circ(24,-36,13,{fill:C.hair, sw:2.5})}${circ(0,0,34,{fill:C.w})}${pth('M-35,-2 Q-34,-40 0,-38 Q34,-40 35,-2 Q20,-22 0,-20 Q-20,-22 -35,-2 Z',{fill:C.hair})}</g>
+  <g id="baker-body">${ln(-14,-72,-20,0)}${ln(14,-72,20,0)}${ln(0,-190,0,-168)}${pth('M-24,-170 L24,-170 L40,-68 L-40,-68 Z',{fill:C.cocoa})}${pth('M-11,-128 L11,-128 L11,-110 L-11,-110 Z',{stroke:'#3A2113', sw:2.5})}</g>
+  ${bakerPose('baker-worried', pl('-22,-164 -54,-196 -34,-236') + pl('22,-164 54,-196 34,-236'), 'face-worried')}
+  ${bakerPose('baker-think', hip + pl('22,-164 44,-186 14,-194'), 'face-happy')}
+  ${bakerPose('baker-point', hip + pl('22,-164 62,-186 96,-206'), 'face-happy')}
+  ${bakerPose('baker-wave', pl('-22,-164 -40,-120 -32,-96') + pl('22,-164 52,-200 58,-248'), 'face-happy')}
+  ${bakerPose('baker-shake', hip + pl('22,-164 60,-140 84,-132'), 'face-happy')}
+  ${bakerPose('baker-clasp', pl('-22,-164 -18,-122 0,-114') + pl('22,-164 18,-122 0,-114'), 'face-joy')}
+  <g id="baker-face"><use href="#baker-head"/><use href="#face-happy"/></g>
+  <g id="dev-torso">${pth('M-40,0 L-34,-66 Q0,-82 34,-66 L40,0 Z',{fill:C.blue})}${ln(0,-78,0,-92)}</g>
+  <g id="dev-a-head">${circ(0,0,30,{fill:C.w})}${pth('M-30,-4 L-26,-32 L-14,-22 L-6,-40 L4,-24 L14,-38 L20,-22 L30,-4 Q0,-24 -30,-4 Z',{fill:'#1E2A44'})}</g>
+  <g id="dev-b-head">${pth('M24,-22 Q58,-20 52,16 Q44,-4 28,-8 Z',{fill:'#4A2E1E'})}${circ(0,0,30,{fill:C.w})}${pth('M-30,2 Q-30,-34 0,-32 Q30,-34 30,2 Q18,-18 0,-16 Q-16,-18 -30,2 Z',{fill:'#4A2E1E'})}</g>
+  <g id="laptop">${pth('M-54,0 L-46,-64 L46,-64 L54,0 Z',{fill:'#DCE2EC'})}<circle cx="0" cy="-32" r="7" fill="${C.blue}"/></g>
+  <g id="dev-a-ok"><use href="#dev-torso"/><g transform="translate(0 -122)"><use href="#dev-a-head"/><use href="#face-happy" y="3"/></g><use href="#laptop"/></g>
+  <g id="dev-b-ok"><use href="#dev-torso"/><g transform="translate(0 -122)"><use href="#dev-b-head"/><use href="#face-happy" y="3"/></g><use href="#laptop"/></g>
+  <g id="dev-a-stress"><use href="#dev-torso"/><g transform="translate(0 -122)"><use href="#dev-a-head"/><use href="#face-worried" y="3"/></g><use href="#laptop"/></g>
+  <g id="dev-b-stress"><use href="#dev-torso"/><g transform="translate(0 -122)"><use href="#dev-b-head"/><use href="#face-worried" y="3"/></g><use href="#laptop"/></g>
+  <g id="dev-face"><use href="#dev-a-head"/><use href="#face-happy" y="3"/></g>
+  <g id="dev-stand">${ln(-14,-72,-20,0)}${ln(14,-72,20,0)}${ln(0,-190,0,-168)}${pth('M-26,-170 L26,-170 L32,-72 L-32,-72 Z',{fill:C.blue})}${pl('-22,-164 -58,-142 -84,-132')}${pl('22,-164 40,-122 34,-98')}<g transform="translate(0 -222)"><use href="#dev-a-head"/><use href="#face-happy" y="3"/></g></g>
+  <g id="bot-core">${ln(0,-38,0,-58,{sw:3})}${circ(0,-65,8,{fill:C.violet, sw:2.5})}${ln(0,38,0,47,{sw:3})}${rect(-30,46,60,44,{rx:14, fill:C.violetL})}<circle cx="0" cy="68" r="6.5" fill="${C.violet}"/>${rect(-58,-14,14,28,{rx:5, fill:C.violet, sw:2.5})}${rect(44,-14,14,28,{rx:5, fill:C.violet, sw:2.5})}${rect(-46,-38,92,76,{rx:26, fill:C.violetL})}${rect(-33,-23,66,40,{rx:15, fill:C.violetD, sw:2.5})}<path d="M-20,3 Q-13,-8 -6,3 M6,3 Q13,-8 20,3" fill="none" stroke="#CBBDFF" stroke-width="4.5" stroke-linecap="round"/></g>
+  <g id="bot">${pl('-30,58 -50,74 -44,92',{sw:3})}${pl('30,58 52,44 60,24',{sw:3})}<use href="#bot-core"/></g>
+  <g id="bot-read"><use href="#bot-core"/>${pth('M-52,50 L0,60 L52,50 L52,98 L0,108 L-52,98 Z',{fill:C.w})}${ln(0,60,0,108,{sw:2.5})}${T(-26,90,'</>',{size:17, w:800, fill:C.violet, anchor:'middle'})}${T(26,90,'{ }',{size:17, w:800, fill:C.violet, anchor:'middle'})}</g>
+  <g id="spark">${pth('M0,-20 Q2.6,-2.6 20,0 Q2.6,2.6 0,20 Q-2.6,2.6 -20,0 Q-2.6,-2.6 0,-20 Z',{fill:C.violet, stroke:C.violet, sw:1.5, r:.3})}</g>
+  <g id="ticket">${rect(-32,-26,64,52,{rx:5, fill:C.w, sw:2.5})}${T(0,-6,'ORDER',{size:13, w:800, anchor:'middle'})}${ln(-20,6,20,6,{sw:2})}${ln(-20,15,12,15,{sw:2})}</g>
+  <g id="i-bars">${ln(0,38,40,38,{sw:2.5})}${rect(3,22,9,16,{fill:C.blue, sw:2})}${rect(15.5,12,9,26,{fill:C.blue, sw:2})}${rect(28,3,9,35,{fill:C.blue, sw:2})}</g>
+  <g id="i-bars-c">${ln(0,38,40,38,{sw:2.5})}${rect(3,22,9,16,{fill:C.cocoa, sw:2})}${rect(15.5,12,9,26,{fill:C.cocoa, sw:2})}${rect(28,3,9,35,{fill:C.cocoa, sw:2})}</g>
+  <g id="i-pie">${circ(20,20,18,{fill:C.blueL, sw:2.5})}${pth('M20,20 L20,2 A18,18 0 0 1 37.5,25 Z',{fill:C.blue, sw:2.5})}</g>
+  <g id="i-pie-c">${circ(20,20,18,{fill:C.cream, sw:2.5})}${pth('M20,20 L20,2 A18,18 0 0 1 37.5,25 Z',{fill:C.cocoa, sw:2.5})}</g>
+  <g id="i-line">${pl('2,34 13,21 24,27 38,6',{stroke:C.blue, sw:3.5})}<circle cx="13" cy="21" r="3.5" fill="${C.blue}"/><circle cx="24" cy="27" r="3.5" fill="${C.blue}"/><circle cx="38" cy="6" r="3.5" fill="${C.blue}"/></g>
+  <g id="i-db">${pth('M4,8 Q20,0 36,8 L36,32 Q20,40 4,32 Z',{fill:C.blueL, sw:2.5})}${pth('M4,8 Q20,16 36,8',{sw:2.5})}${pth('M4,20 Q20,28 36,20',{sw:2.5})}</g>
+  <g id="i-gear">${poly(starPts(20,20,19,13.5,8),{fill:C.blueL, sw:2.5})}${circ(20,20,6,{fill:C.w, sw:2.5})}</g>
+  <g id="i-star">${poly(starPts(20,21,20,8.5,5),{fill:C.cocoa, sw:2.5})}</g>
+  <g id="i-table">${rect(2,4,36,32,{fill:C.w, sw:2.5})}${rect(2,4,36,10,{fill:C.blueL, sw:2.5})}${ln(2,25,38,25,{sw:2})}${ln(14,4,14,36,{sw:2})}${ln(26,4,26,36,{sw:2})}</g>
+  <g id="i-doc">${rect(6,2,28,36,{rx:3, fill:C.w, sw:2.5})}${ln(12,12,28,12,{sw:2})}${ln(12,20,28,20,{sw:2})}${ln(12,28,22,28,{sw:2})}</g>
+  <g id="i-brain"><use href="#spark" transform="translate(16 22) scale(.75)"/><use href="#spark" transform="translate(32 8) scale(.38)"/></g>
+  <g id="i-eye">${pth('M0,20 Q20,-2 40,20 Q20,42 0,20 Z',{fill:C.w, sw:2.5})}${circ(20,20,8,{fill:C.blue, sw:2})}<circle cx="20" cy="20" r="3" fill="${I}"/></g>
+  <g id="i-box">${poly('20,2 38,11 38,31 20,40 2,31 2,11',{fill:C.cream, sw:2.5})}${pl('2,11 20,20 38,11',{sw:2.5})}${ln(20,20,20,40,{sw:2.5})}</g>
+  <g id="i-wrench">${pth('M30,3 Q20,4 21,15 L4,32 L8,37 L25,20 Q36,21 37,10 L31,15 L26,12 L27,6 Z',{fill:C.slate, sw:2.5})}</g>
+  <g id="i-hire">${circ(20,20,18,{fill:'#FFF1CF', sw:2.5})}${T(20,29,'$',{size:26, w:800, anchor:'middle'})}</g>
+  <g id="i-check">${circ(0,0,16,{fill:C.green, sw:2.5})}<path d="M-7,0 L-2,6 L8,-6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-phone">${pth('M9,3 Q2,5 3,14 Q8,30 26,37 Q35,39 37,31 L30,24 L24,28 Q15,23 12,16 L17,10 Z',{fill:C.blue, sw:2.5})}</g>
+  <g id="shop-back">${ln(36,120,36,372,{sw:5})}${ln(324,120,324,372,{sw:5})}${rect(50,0,260,60,{rx:10, fill:'#FFF8EF'})}${T(180,42,'Cocoa&Co.',{size:34, w:800, fill:C.cocoa, anchor:'middle'})}${stripes}</g>
+  <g id="shop-front">${rect(30,236,170,136,{fill:C.w})}${ln(30,282,200,282,{sw:2.5})}${ln(30,328,200,328,{sw:2.5})}${cakes}${rect(210,272,128,100,{fill:'#F3DCC4'})}${rect(262,226,54,36,{rx:4, fill:'#DDE5F0'})}${ln(289,262,289,272)}${ln(0,374,360,374,{sw:3.5})}</g>`;
+}
+
+/* ---------- scenes ---------- */
+function worlds(p, pose) {
+  let h = `<g transform="translate(90 430) scale(.92)">${A('rise', p+.2, '<use href="#shop-back"/>')}${A('pop', p+.7, A('bob', p+1.6, U(pose, 272, 372, .85)))}${A('rise', p+.3, '<use href="#shop-front"/>')}</g>`;
+  h += A('pop', p+.9, rect(1195,468,260,66,{rx:33, fill:C.blueL}) + T(1325,515,'DataVis',{size:40, w:800, fill:C.blue, anchor:'middle'}));
+  h += A('rise', p+1.0, ln(1150,760,1500,760,{sw:4}) + U('dev-a-ok',1260,760) + U('dev-b-ok',1400,760));
+  h += A('fade', p+1.4, T(256,832,'Cocoa&Co. · the buyer',{size:26, w:700, fill:C.cocoa, anchor:'middle'}) + T(1325,832,'DataVis · the seller',{size:26, w:700, fill:C.blue, anchor:'middle'}));
+  return h;
+}
+const sparks = (list, d) => list.map(([x,y,s], k) => A('twinkle', d + k * .35, U('spark', 0, 0, s), `translate(${x} ${y})`)).join('');
+
+function s0() {
+  let h = '';
+  const acr = w => `<tspan fill="${C.violet}" font-weight="800">${w[0]}</tspan>${esc(w.slice(1))}`;
+  h += A('lift', .1, T(800,214,'CHIPS',{size:176, w:800, anchor:'middle', ls:6}));
+  h += A('draw', 1.0, pth('M560,246 C700,262 900,234 1040,252',{stroke:C.violet, sw:7}));
+  h += A('lift', .3, T(800,318,['Cloud','and','Hardware','Integration','Platform','for','Small','Software'].map(w => ['and','for'].includes(w) ? esc(w) : acr(w)).join(' '),{size:40, w:700, anchor:'middle', raw:1}));
+  h += A('lift', .45, T(800,376,'An agentic forward deployed engineer between software vendors and their customers',{size:25, w:500, fill:C.muted, anchor:'middle', f:'ui'}));
+  h += worlds(0, 'baker-wave');
+  h += A('draw', 1.6, pth('M450,690 Q800,470 1150,690',{stroke:C.violet, sw:5}));
+  h += A('drop', 2.2, A('bob', 3.2, U('bot', 0, 0, 1)), 'translate(800 486)');
+  h += sparks([[900,424,.9],[708,452,.6],[892,548,.5]], 2.8);
+  h += A('fade', 2.6, T(800,652,'the agent in between',{size:24, w:700, fill:C.violet, anchor:'middle'}));
+  return h;
+}
+
+function s1() {
+  let h = '';
+  h += `<g transform="translate(90 380)">${A('rise', .2, '<use href="#shop-back"/>')}${A('pop', .7, A('wig', 1.6, U('baker-worried', 272, 372, .85)))}${A('rise', .3, '<use href="#shop-front"/>')}</g>`;
+  h += A('pop', 1.2, A('wig', 1.9, T(0,0,'?',{size:66, w:800, fill:C.cocoa})), 'translate(412 548)');
+  h += A('fade', 1.4, pth('M314,528 Q321,540 314,546 Q307,540 314,528 Z',{fill:'#8EC5FF', sw:2, r:.3}) + pth('M296,556 Q302,566 296,571 Q290,566 296,556 Z',{fill:'#8EC5FF', sw:2, r:.3}));
+  // browser window with orders
+  h += A('rise', 1.0, rect(540,150,360,220,{rx:14, fill:C.w, sw:3}) + ln(540,186,900,186,{sw:2.5}) +
+    `<circle cx="562" cy="168" r="6" fill="#F26B5B"/><circle cx="582" cy="168" r="6" fill="#F4B63F"/><circle cx="602" cy="168" r="6" fill="#39B36B"/>` +
+    T(624,174,'cocoaandco.shop',{size:15, w:600, fill:C.muted, f:'ui'}));
+  let k = 0;
+  for (const cy of [232, 304]) for (let i = 0; i < 4; i++) { h += A('pop', 1.3 + (k++) * .1, U('ticket', 600 + i * 78, cy, .95)); }
+  h += A('pop', 1.7, rect(796,120,208,42,{rx:21, fill:C.red, sw:2.5}) + T(900,148,`NEW ORDERS ${cnt(3,128,2.0,6.5)}`,{raw:1, size:17, w:800, fill:'#fff', anchor:'middle', f:'ui', ls:1}));
+  // flying tickets
+  const ends = [[520,748,-14],[580,752,8],[642,748,-6],[702,744,16],[548,712,20],[610,708,-10],[672,712,6],[528,676,-24],[590,670,12],[652,676,-4],[566,636,18],[628,632,-16],[600,598,6],[694,640,28]];
+  ends.forEach(([x,y,r], i) => { h += `<g transform="translate(720 345)"><g class="fly" style="--x:${x-720}px;--y:${y-345}px;--r:${r}deg;--d:${(2.2 + i * .24).toFixed(2)}s">${U('ticket',0,0,.9)}</g></g>`; });
+  h += A('draw', 1.9, pth('M770,380 Q780,470 722,560',{arrow:1, sw:3.5}));
+  // spreadsheet
+  let s = rect(1010,390,310,350,{rx:10, fill:C.w, sw:3.5});
+  [[1114,464,C.greenL],[1218,504,C.slate],[1270,544,C.redL],[1062,584,C.greenL],[1166,624,C.slate],[1114,664,C.redL],[1218,704,C.greenL]].forEach(([x,y,c]) => { s += rect(x,y,50,40,{fill:c, stroke:'none', r:.6}); });
+  s += ln(1010,424,1320,424,{sw:2.5});
+  [1062,1114,1166,1218,1270].forEach(x => { s += ln(x,424,x,740,{sw:1.8, stroke:'#9AA5B8'}); });
+  for (let y = 464; y <= 704; y += 40) s += ln(1010,y,1320,y,{sw:1.8, stroke:'#9AA5B8'});
+  s += `<circle cx="1028" cy="407" r="5" fill="#9AA5B8"/><circle cx="1044" cy="407" r="5" fill="#9AA5B8"/>`;
+  h += A('rise', 4.9, `<g transform="rotate(3 1165 565)">${s}</g>`);
+  const paper = (x,y,rot) => `<g transform="rotate(${rot} ${x} ${y})">${rect(x-30,y-37,60,74,{fill:C.w, sw:2.5})}${ln(x-18,y-18,x+18,y-18,{sw:2})}${ln(x-18,y-4,x+18,y-4,{sw:2})}${ln(x-18,y+10,x+8,y+10,{sw:2})}</g>`;
+  h += A('fade', 5.3, paper(952,700,-18) + paper(1352,712,14) + paper(975,466,-12));
+  h += A('draw', 4.6, pth('M740,690 Q860,650 990,612',{arrow:1, sw:3.5}));
+  const bubble = (x,y,rx,ry,txt,tails,d) => A('pop', d, A('wig2', d + .8, ell(x,y,rx,ry,{fill:C.w, sw:3, r:1.3}) + tails.map(([tx,ty,tr]) => circ(tx,ty,tr,{fill:C.w, sw:2.5})).join('') + T(x,y+12,txt,{size:34, w:800, anchor:'middle'})));
+  h += bubble(1040,262,110,54,'PROFIT?',[[1072,334,10],[1088,362,6]],5.8);
+  h += bubble(1310,196,135,54,'MARGINS?',[[1262,268,10],[1240,296,6]],6.4);
+  h += bubble(1430,320,158,54,'BESTSELLERS?',[[1372,388,9],[1350,410,6]],7.0);
+  return h;
+}
+
+function s2() {
+  let h = '';
+  h += A('draw', .2, rect(540,200,520,600,{rx:34, fill:'#F3F7FF', stroke:C.blue, sw:4}));
+  h += A('pop', .6, rect(670,166,260,68,{rx:34, fill:C.blueL}) + T(800,214,'DataVis',{size:46, w:800, fill:C.blue, anchor:'middle'}));
+  [[555,'CHARTS','i-bars'],[725,'ANALYTICS','i-line'],[895,'DASHBOARDS','i-pie']].forEach(([x,l,ic], k) => {
+    h += A('pop', .9 + k * .2, rect(x,262,150,130,{rx:16, fill:C.w, sw:3}) + T(x+75,294,l,{size:18, w:800, anchor:'middle', ls:1}) + U(ic, x+41, 310, 1.7));
+  });
+  const stack = x => [0,3,-2,4,-1].map((o,i) => rect(x-30+o, 668-i*11, 60, 11, {fill:C.w, sw:2})).join('');
+  h += A('fade', 1.4, ln(560,680,1040,680,{sw:4}) + stack(606) + stack(1000) + pth('M944,650 L970,650 L967,680 L947,680 Z',{fill:C.w, sw:2.5}) + pth('M970,657 Q984,660 968,673',{sw:2.5}));
+  h += A('pop', 1.6, A('shake', 2.4, U('dev-a-stress', 730, 680)));
+  h += A('pop', 1.8, A('shake', 2.7, U('dev-b-stress', 870, 680)));
+  h += A('fade', 2.6, pth('M690,512 q8,-14 16,0 q8,14 16,0',{sw:2.5, r:.4}) + pth('M890,512 q8,-14 16,0 q8,14 16,0',{sw:2.5, r:.4}) +
+    pth('M772,520 Q779,532 772,538 Q765,532 772,520 Z',{fill:'#8EC5FF', sw:2, r:.3}) + pth('M828,520 Q835,532 828,538 Q821,532 828,520 Z',{fill:'#8EC5FF', sw:2, r:.3}));
+  h += A('fade', 1.8, T(572,730,'TEAM BANDWIDTH',{size:15, w:800, f:'ui', ls:2, fill:C.muted}) + T(1028,730,cnt(100,3,3,8,'%'),{raw:1, size:16, w:800, f:'ui', anchor:'end'}) + rect(570,742,460,30,{rx:15, fill:C.w, sw:2.5}));
+  h += A('drain', 3.0, rect(576,748,448,18,{rx:9, fill:C.green, stroke:'none', r:.4}));
+  const asks = ['“Can you track our sales?”','“Could we get a custom report?”','“Does it plug into our CRM?”'];
+  const bodies = [C.cocoa, C.teal, C.amber], icons = ['i-bars','i-pie','i-line'], targ = [330, 500, 660];
+  [190, 390, 590].forEach((y, k) => {
+    h += A('inL', 2.2 + k * .5, rect(90,y,300,150,{rx:18, fill:C.w, sw:3}) + pth(`M118,${y+112} Q140,${y+74} 162,${y+112} Z`,{fill:bodies[k], sw:2.5}) + circ(140,y+50,20,{fill:C.w, sw:2.5}) +
+      `<g transform="translate(140 ${y+50}) scale(.55)"><use href="#face-happy"/></g>` + rect(186,y+18,184,70,{rx:22, fill:'#F1F4F9', sw:2.5}) + U(icons[k], 258, y+33, 1) +
+      T(240,y+136,asks[k],{size:15, f:'ui', w:600, anchor:'middle'}));
+    h += A('draw', 2.5 + k * .5, pth(`M396,${y+75} Q470,${y+75} 535,${targ[k]}`,{arrow:1, sw:3}));
+  });
+  h += A('pop', 4.0, A('ring', 4.4, U('i-phone', 0, 0, 2.1)), 'translate(1140 90)');
+  h += A('blink', 4.4, pth('M1236,100 Q1250,118 1236,138',{sw:3, stroke:C.blue}) + pth('M1250,90 Q1272,118 1250,148',{sw:3, stroke:C.blue}));
+  h += A('draw', 4.3, pth('M1150,190 Q1100,220 1062,262',{arrow:1, sw:3}));
+  h += A('inR', 4.6, rect(1262,150,268,140,{rx:18, fill:C.w, sw:3}) + circ(1302,250,18,{fill:C.w, sw:2.5}) + `<g transform="translate(1302 250) scale(.5)"><use href="#face-happy"/></g>` +
+    circ(1490,250,18,{fill:C.w, sw:2.5}) + `<g transform="translate(1490 250) scale(.5)"><use href="#face-worried"/></g>` + rect(1326,166,140,66,{rx:20, fill:'#F1F4F9', sw:2.5}) +
+    T(1340,214,'$',{size:40, w:800}) + pth('M1372,190 L1408,190',{arrow:1, sw:3}) + pth('M1408,206 L1372,206',{arrow:1, sw:3}) + ln(1422,186,1450,186,{sw:2.5}) + ln(1422,198,1450,198,{sw:2.5}) + ln(1422,210,1444,210,{sw:2.5}));
+  h += A('draw', 4.9, pth('M1256,262 Q1150,300 1066,330',{arrow:1, sw:3}));
+  h += A('inR', 5.2, circ(1240,460,22,{fill:C.w, sw:3}) + rect(1242,395,258,130,{rx:18, fill:C.w, sw:3}) + T(1371,452,'</>',{size:44, w:800, fill:C.blue, anchor:'middle'}) + T(1371,500,'INTEGRATION',{size:24, w:800, anchor:'middle', ls:1}));
+  h += A('draw', 5.5, pth('M1214,470 Q1140,480 1066,490',{arrow:1, sw:3}));
+  let ck = circ(0,0,88,{fill:C.w, stroke:C.blue, sw:6});
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; ck += `<line x1="${(Math.sin(a)*68).toFixed(1)}" y1="${(-Math.cos(a)*68).toFixed(1)}" x2="${(Math.sin(a)*78).toFixed(1)}" y2="${(-Math.cos(a)*78).toFixed(1)}" stroke="${C.ink}" stroke-width="${i % 3 ? 2.5 : 4.5}" stroke-linecap="round"/>`; }
+  ck += `<g class="spinS" style="--d:6s">${ln(0,0,0,-44,{sw:6})}</g><g class="spin" style="--d:6s">${ln(0,0,56,0,{sw:4})}</g><circle r="6" fill="${C.ink}"/>`;
+  h += A('pop', 5.8, ck, 'translate(1380 690)');
+  h += A('fade', 6.2, pth('M1488,610 q16,-8 26,-24',{sw:3, r:.4}) + pth('M1500,640 q18,-2 32,-14',{sw:3, r:.4}));
+  h += A('draw', 6.1, pth('M1290,660 Q1170,640 1066,630',{arrow:1, sw:3}));
+  return h;
+}
+
+function s3() {
+  let h = A('fade', .2, T(800,196,'Traditional software forces a choice',{size:42, w:800, anchor:'middle'}));
+  const cards = [
+    {x:90, ic:'i-box', t:'Buy standard SaaS', s:['and bend your workflow','to fit the product'], st:'DOESN’T FIT'},
+    {x:580, ic:'i-hire', t:'Hire engineers', s:['or consultants to build','something custom'], st:'TOO COSTLY'},
+    {x:1070, ic:'i-wrench', t:'Build internal tools', s:['and carry the','maintenance burden'], st:'HIGH UPKEEP'}];
+  cards.forEach((c, k) => {
+    const x = c.x;
+    const card = rect(x,240,440,320,{rx:22, fill:C.w, sw:3}) + U(c.ic, x+180, 262, 2) + T(x+220,398,c.t,{size:32, w:800, anchor:'middle'}) +
+      T(x+220,438,c.s[0],{size:21, f:'ui', w:500, fill:C.muted, anchor:'middle'}) + T(x+220,466,c.s[1],{size:21, f:'ui', w:500, fill:C.muted, anchor:'middle'});
+    const stamp = A('stamp', 2.6 + k * .55, rect(x+112,492,216,48,{rx:8, fill:C.w, stroke:C.red, sw:3.5}) + T(x+220,525,c.st,{size:22, w:800, fill:C.red, anchor:'middle', ls:1}), `rotate(-5 ${x+220} 516)`);
+    h += A('dim', 4.9, A('rise', .6 + k * .35, card) + stamp);
+  });
+  h += A('pulse', 6.2, A('fade', 5.3, `<rect x="230" y="620" width="1140" height="190" rx="30" fill="${C.violet}" opacity=".45" filter="url(#blur)"/>`));
+  h += A('pop', 5.3, rect(200,600,1200,230,{rx:30, fill:C.violetL, stroke:C.violet, sw:5}) + A('bob', 6.2, U('bot', 0, 0, 1), 'translate(330 704)') +
+    T(440,668,'OPTION 4',{size:20, w:800, fill:C.violet, f:'ui', ls:3}) + T(438,732,'CHIPS',{size:60, w:800, ls:2}) +
+    T(440,780,'A reusable product, adapted to each customer’s actual workflow.',{size:25, f:'ui', w:500}));
+  h += sparks([[1330,648,.9],[1362,716,.55],[1300,786,.4]], 6.0);
+  return h;
+}
+
+function s4() {
+  let h = A('fade', .2, `<g transform="translate(60 450) scale(.6)"><use href="#shop-back"/><use href="#shop-front"/></g>`);
+  h += A('pop', .5, U('baker-think', 330, 700, .92));
+  h += A('pop', .9, rect(410,470,210,170,{rx:16, fill:C.w, sw:3}) + U('i-bars-c',428,486,.8) + T(470,512,'Profit',{size:22, w:700}) +
+    U('i-pie-c',428,538,.8) + T(470,564,'Margins',{size:22, w:700}) + U('i-star',428,590,.8) + T(470,616,'Bestsellers',{size:22, w:700}));
+  h += A('draw', 1.3, pth('M626,556 L702,556',{arrow:1, sw:3.5}));
+  h += A('pop', 1.5, rect(710,500,180,150,{rx:30, fill:C.tealL, stroke:C.teal, sw:4}) +
+    `<g transform="rotate(-40 800 575)">${rect(746,561,62,28,{rx:14, stroke:C.teal, sw:7})}${rect(792,561,62,28,{rx:14, stroke:C.teal, sw:7})}</g>`);
+  h += A('drop', 1.9, A('bob', 2.8, U('bot', 0, 0, .8)), 'translate(800 440)');
+  h += sparks([[914,470,.6],[690,488,.45]], 2.4);
+  const q = (y, txt, t, agent) => A('pop', t - .1, rect(agent ? 580 : 650, y, 450, 46, {rx:22, fill: agent ? C.violetL : '#F6E9DC', stroke: agent ? C.violet : C.cocoa, sw:2.5}) +
+    T((agent ? 580 : 650) + 24, y + 30, txt, {size:20, f:'ui', w:600, cls:'type', t, cps:30}));
+  h += q(142, 'Where do your orders live today?', 2.5, true);
+  h += q(198, 'Our website, plus one big spreadsheet.', 3.9, false);
+  h += q(254, 'Who needs to see the margins?', 5.3, true);
+  h += q(310, 'Just the two owners.', 6.4, false);
+  h += A('fade', 7.2, rect(1130,150,400,284,{rx:18, fill:C.w, sw:3}) + T(1156,188,'FIT ANALYSIS',{size:15, w:800, f:'ui', ls:2, fill:C.muted}));
+  [['Generic BI suite',41,'#A3AEC1'],['Custom dev agency',58,'#A3AEC1'],['DataVis',94,C.teal]].forEach(([n,p,c], k) => {
+    const y = 234 + k * 66, t = 7.5 + k * .35;
+    if (k === 2) h += A('hl', 8.8, rect(1142,y-30,376,60,{rx:12, fill:C.tealL, stroke:'none', r:.4}));
+    h += A('fade', t, T(1156,y,n,{size:19, f:'ui', w: k === 2 ? 800 : 600}) + T(1504,y,cnt(0,p,t,1,'%'),{raw:1, size:19, f:'ui', w:800, anchor:'end'}) + rect(1156,y+12,348,12,{rx:6, fill:C.slate, stroke:'none', r:.3}));
+    h += A('growX', t, rect(1156,y+12,Math.round(348*p/100),12,{rx:6, fill:c, stroke:'none', r:.3}));
+  });
+  h += A('draw', 9.2, pth('M896,590 Q1030,600 1170,642',{stroke:C.teal, sw:7, arrow:1}));
+  h += A('pop', 9.6, T(1030,576,'MATCH',{size:30, w:800, fill:C.teal, anchor:'middle'}) + ln(962,556,950,542,{sw:3, stroke:C.teal}) + ln(1098,556,1110,542,{sw:3, stroke:C.teal}) + ln(1030,540,1030,526,{sw:3, stroke:C.teal}));
+  h += A('pop', 9.9, rect(1240,468,220,60,{rx:30, fill:C.blueL}) + T(1350,511,'DataVis',{size:34, w:800, fill:C.blue, anchor:'middle'}) +
+    ln(1180,780,1520,780,{sw:4}) + U('dev-a-ok',1292,780,.95) + U('dev-b-ok',1420,780,.95));
+  const chips = [['Core product',C.green],['Configuration',C.green],['1 custom workflow',C.violet]];
+  let x = 470;
+  chips.forEach(([t,c], k) => {
+    const w = Math.round(t.length * 10.2 + 64);
+    h += A('pop', 10.6 + k * .3, rect(x,704,w,48,{rx:24, fill:C.w, sw:2.5}) + circ(x+26,728,12,{fill:c, stroke:C.ink, sw:2}) +
+      (k < 2 ? tick(x+26,729,'#fff',.7) : `<path d="M${x+20},728 h12 M${x+26},722 v12" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>`) + T(x+46,735,t,{size:19, f:'ui', w:700}));
+    x += w + 14;
+  });
+  return h;
+}
+
+function s5() {
+  let h = A('draw', .2, rect(80,170,420,620,{rx:18, fill:C.w, sw:3.5}));
+  h += A('fade', .4, pth(rrTop(80,170,420,70,18),{fill:C.blueL, sw:3.5}) + T(104,217,'</> DataVis code',{size:30, w:800, fill:C.blue}));
+  const rows = [['Charts','i-bars'],['Data Connectors','i-db'],['Analysis Tools','i-gear'],['Forecasting','i-line'],['LLM Insights','i-brain'],['Reports','i-doc']];
+  let tree = ln(104,252,104,721,{sw:2.5});
+  rows.forEach((r, k) => { tree += ln(104, 301 + k * 84, 130, 301 + k * 84, {sw:2.5}); });
+  h += A('draw', .6, tree);
+  rows.forEach(([n,ic], k) => {
+    const y = 270 + k * 84;
+    h += A('inL', .7 + k * .15, rect(130,y,340,62,{rx:14, fill:C.w, sw:2.5}) + U(ic,146,y+11,1) + T(200,y+40,n,{size:23, w:700}));
+    h += A('pop', 2.55 + k * .57, circ(446,y+31,13,{fill:C.violet, sw:2}) + tick(446,y+32,'#fff',.62));
+  });
+  h += A('scan', 2.2, rect(88,250,404,26,{rx:8, fill:C.violet, stroke:'none', op:.25, r:.3}) + `<line x1="92" y1="263" x2="488" y2="263" stroke="${C.violet}" stroke-width="3"/>`);
+  h += A('fade', 1.9, `<polygon points="500,300 500,700 604,520 604,420" fill="${C.violet}" opacity=".12"/>`);
+  h += A('pop', 1.8, A('bob', 2.6, U('bot-read', 0, 0, 1.05)), 'translate(652 452)');
+  h += sparks([[722,370,.55],[590,356,.4]], 2.4);
+  [300, 500, 680].forEach((y, k) => {
+    h += `<g transform="translate(508 ${y})"><g class="feed" style="--x:${604-508}px;--y:${490-y}px;--d:${(2.4 + k * .45).toFixed(2)}s">${rect(-22,-17,44,34,{rx:6, fill:C.w, stroke:C.violet, sw:2.5})}${T(0,6,'</>',{size:15, w:800, fill:C.violet, anchor:'middle'})}</g></g>`;
+  });
+  h += A('draw', 5.5, pth('M722,470 L792,470',{arrow:1, sw:3.5}));
+  h += A('rise', 5.8, rect(800,140,540,660,{rx:20, fill:C.w, sw:3.5}) + rect(802,182,536,48,{fill:C.tealL, stroke:'none', r:.2}) + ln(800,182,1340,182,{sw:2.5}) + ln(800,230,1340,230,{sw:2.5}) +
+    `<circle cx="822" cy="161" r="6" fill="#F26B5B"/><circle cx="842" cy="161" r="6" fill="#F4B63F"/><circle cx="862" cy="161" r="6" fill="#39B36B"/>` +
+    T(1070,217,'PLAYGROUND',{size:30, w:800, fill:'#0B6F63', anchor:'middle', ls:2}));
+  h += A('fade', 6.3, U('baker-face',846,270,.42) + rect(870,248,440,44,{rx:20, fill:'#F3F5F9', sw:2}) + T(890,277,'Show me sales by product for this quarter?',{size:19, f:'ui', w:600, cls:'type', t:6.4, cps:34}));
+  h += A('fade', 7.7, circ(846,324,16,{fill:C.violetL, stroke:C.violet, sw:2}) + rect(836,318,20,11,{rx:5, fill:C.violetD, stroke:'none', r:.2}) +
+    rect(870,302,262,44,{rx:20, fill:C.violetL, stroke:C.violet, sw:2}) + T(890,331,'Here’s your dashboard!',{size:19, f:'ui', w:600, cls:'type', t:7.8, cps:30}));
+  h += A('fade', 8.3, rect(830,362,480,200,{rx:14, fill:'#F7F9FC', sw:2.5}) + ln(850,540,1062,540,{sw:2.5}));
+  [60,95,125,158].forEach((hh, k) => { h += A('grow', 8.5 + k * .15, rect(866 + k * 48, 540 - hh, 32, hh, {fill:C.blue, sw:2.5})); });
+  h += A('spinIn', 9.0, circ(1190,452,72,{fill:C.teal, sw:3}) + pth('M1190,452 L1190,380 A72,72 0 0 1 1257.7,476.6 Z',{fill:C.blue, sw:3}) + pth('M1190,452 L1257.7,476.6 A72,72 0 0 1 1149.7,511.7 Z',{fill:C.cocoa, sw:3}));
+  const tg = [[832,584,['Charts'],'i-bars'],[999,584,['Data','Connectors'],'i-db'],[1166,584,['Analysis','Tools'],'i-gear'],[832,676,['Forecasting'],'i-line'],[999,676,['LLM','Insights'],'i-brain'],[1166,676,['Reports'],'i-doc']];
+  let grid = '';
+  tg.forEach(([x,y,lab,ic], k) => {
+    let c = rect(x,y,158,76,{rx:14, fill:C.w, sw:2.5}) + U(ic,x+10,y+24,.75) + circ(x+140,y+16,10,{fill:C.w, sw:2});
+    c += lab.length === 1 ? T(x+48,y+46,lab[0],{size:16, w:700}) : T(x+48,y+36,lab[0],{size:16, w:700}) + T(x+48,y+58,lab[1],{size:16, w:700});
+    grid += k > 2 ? `<g opacity=".5">${c}</g>` : c;
+  });
+  h += A('fade', 9.2, grid + T(1078,784,`Selected: ${cnt(0,3,10,1.3)} of 6 services`,{raw:1, size:18, f:'ui', w:700, anchor:'middle'}));
+  [832, 999, 1166].forEach((x, k) => { h += A('pop', 10.0 + k * .62, circ(x+140,600,12,{fill:C.teal, sw:2}) + tick(x+140,601,'#fff',.62)); });
+  h += `<g transform="translate(1250 790)"><g class="cursor" style="--d:9.4s;--x1:-278px;--y1:-186px;--x2:-111px;--y2:-186px;--x3:56px;--y3:-186px"><path d="M0,0 L0,30 L8,22 L14,36 L20,33 L14,20 L25,20 Z" fill="#fff" stroke="${C.ink}" stroke-width="2.2" stroke-linejoin="round"/></g></g>`;
+  h += A('pop', 6.2, U('baker-point',1470,790,.9,true));
+  return h;
+}
+
+function s6() {
+  let h = '';
+  [['i-bars',290],['i-gear',380],['i-db',470]].forEach(([ic,y], k) => {
+    h += A('inL', .3 + k * .2, rect(80,y,210,64,{rx:16, fill:C.w, sw:2.5}) + U(ic,98,y+12,1) + T(168,y+44,'=',{size:32, w:800, anchor:'middle'}) + U('i-check',236,y+32,.95));
+    h += A('draw', .9 + k * .1, pth(`M294,${y+32} Q330,${y+32} 352,${[410,440,470][k]}`,{arrow:1, sw:3, stroke:C.violet}));
+  });
+  h += A('pop', 1.3, A('bob', 2.0, U('bot', 0, 0, .85)), 'translate(410 440)');
+  h += A('draw', 1.8, pth('M468,450 L514,450',{arrow:1, sw:3.5, stroke:C.violet}));
+  h += A('rise', 2.0, pth('M520,100 L960,100 L1010,150 L1010,830 L520,830 Z',{fill:C.w, sw:3.5}) + pth('M960,100 L960,150 L1010,150',{fill:C.slate, sw:3}) +
+    T(765,184,'CSRS',{size:72, w:800, anchor:'middle'}) + T(765,218,'Customized Software Requirements Specification',{size:17, f:'ui', w:600, fill:C.muted, anchor:'middle'}));
+  const rows = [['Workflow','Track profit, margins and bestsellers'],['Services','Charts · Data Connectors · Analysis Tools'],['Data access','Web orders + sales sheet, read-only'],
+    ['Permissions','Owners see margins; staff see sales'],['Tests','Generated from every rule above'],['Upgrades','Stays compatible with DataVis core'],['Cost','Priced by DataVis, approved by both sides']];
+  rows.forEach(([l,v], k) => {
+    const y = 256 + k * 64, t = 3.0 + k * .6;
+    h += A('fade', t, rect(548,y,26,26,{rx:5, fill:C.w, sw:2.5}) + T(590,y+20,l,{size:22, w:800}) + T(590,y+46,v,{size:18, f:'ui', w:500, fill:C.muted}));
+    h += A('pop', t + .2, tick(561,y+13,C.teal,1));
+  });
+  h += A('fade', 7.4, ln(546,716,984,716,{sw:2, stroke:'#C9D2E0'}));
+  h += A('pop', 7.6, A('blink2', 8.4, U('i-eye', 0, 0, 1.5)), 'translate(550 736)');
+  h += A('fade', 7.8, T(632,762,'Human check',{size:24, w:800}) + T(632,790,'Price, data access and risky changes',{size:17, f:'ui', w:500, fill:C.muted}) + T(632,812,'stay with people.',{size:17, f:'ui', w:500, fill:C.muted}));
+  h += A('pop', 8.4, U('baker-shake',1180,700,.9));
+  h += A('pop', 8.6, U('dev-stand',1330,700,.9));
+  h += A('pop', 9.0, ln(1255,540,1255,522,{sw:3.5, stroke:C.teal}) + ln(1234,548,1222,534,{sw:3.5, stroke:C.teal}) + ln(1276,548,1288,534,{sw:3.5, stroke:C.teal}));
+  h += A('rise', 9.3, rect(1150,610,210,220,{rx:10, fill:C.w, sw:3}) + ln(1172,650,1320,650,{sw:2.5}) + ln(1172,674,1336,674,{sw:2.5}) + ln(1172,698,1300,698,{sw:2.5}) +
+    ln(1172,792,1246,792,{sw:2}) + ln(1266,792,1340,792,{sw:2}));
+  h += A('draw', 9.8, pth('M1176,782 q8,-26 16,-4 q6,14 12,-10 q6,-18 12,4 q8,16 20,-6',{stroke:C.cocoa, sw:3.5, r:.5}));
+  h += A('draw', 10.4, pth('M1270,784 q10,-30 18,-2 q4,10 12,-14 l8,18 q10,-16 22,-8',{stroke:C.blue, sw:3.5, r:.5}));
+  h += A('pop', 11.0, U('i-check',1330,742,1.3));
+  h += A('pop', 11.5, rect(1110,148,420,56,{rx:28, fill:C.greenL, stroke:C.green, sw:3}) + T(1320,184,'Engineering hours spent scoping: 0',{size:21, f:'ui', w:800, anchor:'middle', fill:'#1E6B3F'}));
+  return h;
+}
+
+function s7() {
+  let h = A('pop', .2, pth('M745,90 L840,90 L865,115 L865,222 L745,222 Z',{fill:C.w, sw:3}) + T(797,122,'CSRS',{size:18, w:800, anchor:'middle'}) +
+    ln(760,142,846,142,{sw:2.5}) + ln(760,162,852,162,{sw:2.5}) + ln(760,182,826,182,{sw:2.5}) + pth('M760,206 q8,-14 14,0 q6,10 12,-4',{sw:2.5, stroke:C.cocoa, r:.4}) + U('i-check',858,212,.85));
+  h += A('draw', .6, pth('M740,160 Q420,160 420,250',{arrow:1, sw:3.5}));
+  h += A('draw', .8, pth('M870,160 Q1180,160 1180,250',{arrow:1, sw:3.5}));
+  // A: custom dashboard
+  h += A('draw', 1.0, rect(60,280,720,560,{rx:26, fill:C.w, sw:3.5}));
+  h += A('pop', 1.3, rect(230,256,380,50,{rx:25, fill:C.tealL}) + T(420,291,'A · Custom dashboard',{size:25, w:800, anchor:'middle'}));
+  h += A('pop', 1.7, ln(96,620,300,620,{sw:3.5}) + U('dev-a-ok',150,620,.72) + U('dev-b-ok',246,620,.72) + T(198,664,'DataVis',{size:26, w:800, fill:C.blue, anchor:'middle'}));
+  h += A('draw', 2.1, pth('M232,478 Q256,404 334,388',{arrow:1, sw:3}));
+  h += A('drop', 2.3, A('bob', 3.1, U('bot', 0, 0, .72)), 'translate(404 380)');
+  h += A('draw', 2.8, pth('M456,420 Q504,432 512,472',{arrow:1, sw:3}));
+  h += A('rise', 3.0, rect(320,480,340,340,{rx:14, fill:C.w, sw:3}) + ln(320,506,660,506,{sw:2.5}) +
+    `<circle cx="336" cy="493" r="4.5" fill="#F26B5B"/><circle cx="350" cy="493" r="4.5" fill="#F4B63F"/><circle cx="364" cy="493" r="4.5" fill="#39B36B"/>` +
+    rect(334,518,152,124,{rx:10, fill:'#FBF7F2', sw:2}) + T(346,542,'Profit',{size:17, w:800}) + ln(346,632,474,632,{sw:2}) +
+    rect(496,518,150,124,{rx:10, fill:'#FBF7F2', sw:2}) + T(508,542,'Margins',{size:17, w:800}) +
+    rect(334,652,312,156,{rx:10, fill:'#FBF7F2', sw:2}) + T(346,676,'Bestsellers',{size:17, w:800}));
+  [18,30,42,56,72].forEach((hh, k) => { h += A('grow', 3.5 + k * .1, rect(350 + k * 25, 632 - hh, 17, hh, {fill:C.cocoa, sw:2})); });
+  h += A('spinIn', 4.0, circ(571,594,36,{fill:C.caramel, sw:2.5}) + pth('M571,594 L571,558 A36,36 0 0 1 602.2,612 Z',{fill:C.cocoa, sw:2.5}));
+  [['Choc. croissant',136],['Brownie',108],['Cocoa loaf',80],['Truffle box',54]].forEach(([n,w], k) => {
+    const y = 702 + k * 28;
+    h += A('fade', 4.5 + k * .12, T(346,y,n,{size:15, f:'ui', w:600}));
+    h += A('growX', 4.5 + k * .12, rect(500,y-12,w,14,{rx:4, fill:C.cocoa, stroke:'none', r:.3}));
+  });
+  h += A('pop', 5.3, A('hop', 5.9, U('baker-clasp',720,812,.8)));
+  // B: API / MCP integration
+  h += A('draw', 5.8, rect(820,280,720,560,{rx:26, fill:C.w, sw:3.5}));
+  h += A('pop', 6.0, rect(990,256,380,50,{rx:25, fill:C.tealL}) + T(1180,291,'B · API / MCP integration',{size:24, w:800, anchor:'middle'}));
+  h += A('fade', 6.3, rect(848,340,176,470,{rx:18, stroke:C.blue, sw:3, dash:'10 8'}) + T(936,376,'DataVis',{size:24, w:800, fill:C.blue, anchor:'middle'}));
+  [['i-bars',400],['i-pie',530],['i-table',660]].forEach(([ic,y], k) => { h += A('pop', 6.5 + k * .15, rect(876,y,120,100,{rx:14, fill:C.w, sw:2.5}) + U(ic,900,y+14,1.8)); });
+  const pipes = ['M996,450 C1040,450 1040,560 1080,560','M996,580 C1030,580 1040,560 1080,560','M996,580 C1030,580 1040,680 1080,680','M996,710 C1040,710 1040,680 1080,680','M1190,560 C1225,560 1215,470 1250,470','M1190,680 C1225,680 1215,600 1250,600'];
+  h += A('draw', 6.9, pipes.map(d => pth(d,{sw:3.5})).join(''));
+  h += A('pop', 7.3, rect(1080,535,110,50,{rx:20, fill:C.blueL}) + T(1135,569,'API',{size:24, w:800, anchor:'middle'}) + rect(1080,655,110,50,{rx:20, fill:C.blueL}) + T(1135,689,'MCP',{size:24, w:800, anchor:'middle'}));
+  h += A('drop', 7.5, A('bob', 8.3, U('bot', 0, 0, .7)), 'translate(1135 420)');
+  const routes = ['M996,450 C1040,450 1040,560 1080,560 L1190,560 C1225,560 1215,470 1250,470','M996,580 C1030,580 1040,680 1080,680 L1190,680 C1225,680 1215,600 1250,600',
+    'M996,710 C1040,710 1040,680 1080,680 L1190,680 C1225,680 1215,600 1250,600','M996,580 C1030,580 1040,560 1080,560 L1190,560 C1225,560 1215,470 1250,470'];
+  h += A('fade', 7.9, routes.map((r, k) => `<circle r="7" fill="${C.violet}" stroke="${C.ink}" stroke-width="2"><animateMotion dur="1.6s" repeatCount="indefinite" begin="-${(k * .4).toFixed(1)}s" path="${r}"/></circle>`).join(''));
+  h += A('rise', 8.2, rect(1250,360,264,440,{rx:14, fill:C.w, sw:3}) + ln(1250,388,1514,388,{sw:2.5}) +
+    `<circle cx="1266" cy="374" r="4.5" fill="#F26B5B"/><circle cx="1280" cy="374" r="4.5" fill="#F4B63F"/><circle cx="1294" cy="374" r="4.5" fill="#39B36B"/>` +
+    T(1382,432,'Cocoa&Co.',{size:26, w:800, fill:C.cocoa, anchor:'middle'}) + T(1382,484,'</>',{size:40, w:800, anchor:'middle'}));
+  ['connect("orders")','chart("profit")','chart("margins")','rank("bestsellers")','mcp.add("datavis")'].forEach((l, k) => {
+    const y = 532 + k * 34, t = 8.8 + k * .7;
+    h += A('fade', t, `<circle cx="1272" cy="${y-5}" r="4" fill="${C.cocoa}"/>` + T(1284,y,l,{size:15, f:'mono', w:600, cls:'type', t, cps:26}));
+  });
+  h += A('pop', 12.4, T(1370,760,'Deployed',{size:24, w:800, fill:'#1E7A43', anchor:'middle'}) + U('i-check',1470,752,1.3));
+  return h;
+}
+
+function s8() {
+  let h = '';
+  const side = (x, fill, stroke, face, title, sub, labels, hls, hlFill, d) => {
+    let g = rect(x,160,370,680,{rx:24, fill, stroke, sw:3}) + U(face, x+42, 206, face === 'baker-face' ? .64 : .72) + T(x+80,206,title,{size:25, w:800}) + T(x+80,232,sub,{size:15, f:'ui', w:500, fill:C.muted});
+    labels.forEach((l, k) => { const y = 270 + k * 90; g += rect(x+24,y,322,72,{rx:14, fill:C.w, sw:2}) + T(x+46,y+44,l,{size:19, w:700}); });
+    let out = A(d, .2, g);
+    labels.forEach((l, k) => { const y = 270 + k * 90;
+      out += A('hl', hls[k], rect(x+24,y,322,72,{rx:14, fill:hlFill, stroke, sw:2.5}) + T(x+46,y+44,l,{size:19, w:800}) + U('i-check',x+326,y+36,.8)); });
+    return out;
+  };
+  h += side(60,'#FBF3EA',C.cocoa,'baker-face','Buyer-side agent','the customer’s technical advocate',
+    ['Discovery','Fit analysis','Customization','Integration & migration','Rollout','Ongoing adaptation'],[.9,1.1,5.2,11.8,1.3,3.0],'#F3DCC4','inL');
+  h += side(1170,'#EEF4FF',C.blue,'dev-face','Seller-side agent','protects the vendor’s product',
+    ['Feasibility & scoping','Architecture protection','Testing & validation','Upgrade management','Product learning','Support & diagnosis'],[1.5,5.2,3.0,7.4,9.6,11.8],C.blueL,'inR');
+  h += A('fade', 1.4, T(508,197,'LIVE · AFTER GO-LIVE',{size:16, f:'ui', w:800, ls:2}));
+  h += A('blink', 1.4, `<circle cx="490" cy="191" r="7" fill="${C.red}"/>`);
+  const ev = [
+    {t:2.0, chip:'BUYER REQUEST', cc:'#F3DCC4', req:'“Add a second approval for discounts over 20%.”', res:'→ approval rule configured · saved as a permanent test'},
+    {t:4.2, chip:'BUYER REQUEST', cc:'#F3DCC4', req:'“Give contractors access, but hide financial fields.”', res:'→ permission rule added · enforced by the cloud'},
+    {t:6.4, chip:'SELLER RELEASE', cc:C.blueL, req:'DataVis ships version 2.0', res:'→ every customization checked · 1 extension auto-adapted'},
+    {t:8.6, chip:'PRODUCT SIGNAL', cc:C.violetL, req:'Many customers ask for the same margins view', res:'→ recommend: promote it to a core feature'},
+    {t:10.8, chip:'SUPPORT TICKET', cc:C.tealL, req:'“The dashboard is empty this morning.”', res:'→ diagnosis: broken integration, not a product defect'}];
+  ev.forEach((e, k) => {
+    const y = 222 + k * 122, cw = Math.round(e.chip.length * 9.4 + 26);
+    h += A('drop2', e.t, rect(470,y,660,106,{rx:16, fill:C.w, sw:2.5}) + rect(490,y+14,cw,28,{rx:14, fill:e.cc, stroke:'none', r:.3}) + T(503,y+33,e.chip,{size:13, f:'ui', w:800, ls:1.5}) + T(490,y+68,e.req,{size:20, f:'ui', w:600}));
+    h += A('fade', e.t + 1.0, T(490,y+94,e.res,{size:15, f:'mono', w:600, fill:'#1E7A43'}));
+  });
+  return h;
+}
+
+function s9() {
+  let h = '';
+  const slabs = [
+    {y:648, hh:96, fill:'#E4E9F2', st:C.ink, sw:3, l:'Small-software cloud', s:'Runs the implementation safely and reliably', d:.3},
+    {y:538, hh:96, fill:C.blueL, st:C.ink, sw:3, l:'Seller’s core product', s:'Supplies reusable domain logic and product experience', d:.7},
+    {y:428, hh:96, fill:'#F7E6D6', st:C.ink, sw:3, l:'Customer extensions', s:'Capture the buyer’s unique workflow', d:1.1},
+    {y:318, hh:96, fill:C.tealL, st:C.ink, sw:3, l:'Organizational policy', s:'Defines what software and agents are allowed to do', d:1.5}];
+  slabs.forEach(s => { h += A('drop2', s.d, rect(80,s.y,680,s.hh,{rx:18, fill:s.fill, stroke:s.st, sw:s.sw}) + T(110,s.y+44,s.l,{size:28, w:800}) + T(110,s.y+74,s.s,{size:18, f:'ui', w:500, fill:C.muted})); });
+  h += A('pulse', 2.8, A('fade', 2.0, `<rect x="100" y="200" width="640" height="96" rx="20" fill="${C.violet}" opacity=".45" filter="url(#blur)"/>`));
+  h += A('drop2', 2.0, rect(80,190,680,112,{rx:18, fill:C.violetL, stroke:C.violet, sw:4}) + U('bot',146,236,.5) + T(200,240,'CHIPS agent',{size:30, w:800}) +
+    T(200,274,'Understands intent and turns it into a working implementation',{size:18, f:'ui', w:500, fill:C.muted}));
+  h += A('fade', 2.6, T(110,784,'CLOUD PRIMITIVES THE AGENT COMPOSES',{size:14, f:'ui', w:800, ls:2, fill:C.muted}) +
+    T(110,812,'one-click deploy · identity · permissions · data storage · secrets',{size:15, f:'mono', w:500}) +
+    T(110,838,'approved connectors · isolation · rollback · versioning · audit logs',{size:15, f:'mono', w:500}));
+  h += A('fade', 3.4, rect(840,180,690,150,{rx:20, fill:C.w, sw:3}) + T(870,220,'EXISTING CLOUDS',{size:15, f:'ui', w:800, ls:2, fill:C.muted}) +
+    T(1500,220,'AWS · Azure',{size:16, f:'ui', w:600, fill:C.muted, anchor:'end'}) + T(870,290,'deploy this container',{size:36, f:'mono', w:600}));
+  h += A('draw', 4.2, pth('M858,278 C1000,272 1150,284 1340,274',{stroke:C.red, sw:6}));
+  h += A('fade', 4.8, rect(840,360,690,300,{rx:20, fill:C.violetL, stroke:C.violet, sw:4}) + T(870,400,'WITH CHIPS',{size:15, f:'ui', w:800, ls:2, fill:C.violet}));
+  ['Deploy this workflow','for this customer,','using these systems and permissions,','while preserving compatibility','with the seller’s product.'].forEach((l, i) => {
+    h += T(870, 452 + i * 44, l, {size:30, w:700, cls:'type', t:[5.2,6.0,6.8,8.2,9.3][i], cps:26});
+  });
+  h += A('fade', 10.4, T(840,722,'The cloud makes customization technically safe.',{size:25, w:700}));
+  h += A('fade', 11.2, T(840,762,'The agent makes it operationally accessible.',{size:25, w:800, fill:C.violet}));
+  return h;
+}
+
+function s10() {
+  let h = A('draw', .2, pth('M120,190 L120,700 L1000,700',{sw:3.5}));
+  h += A('fade', .6, T(0,0,'audience per product',{size:16, f:'ui', w:600, fill:C.muted, anchor:'middle', tf:'translate(98 445) rotate(-90)'}) +
+    T(560,740,'products, from horizontal SaaS to one-team tools →',{size:16, f:'ui', w:600, fill:C.muted, anchor:'middle'}));
+  h += A('fade', 1.5, pth('M130,215 C190,560 300,640 990,680 L990,698 L130,698 Z',{fill:'#BFD1F3', stroke:'none', fs:'hachure', gap:9}));
+  h += A('draw', .8, pth('M130,215 C190,560 300,640 990,680',{sw:4.5, stroke:C.blue}));
+  h += A('fade', 1.8, T(160,236,'horizontal SaaS',{size:22, w:800, fill:C.blue}));
+  h += A('fade', 2.4, T(690,470,'the long tail of small software',{size:28, w:800, fill:C.violet, anchor:'middle'}));
+  const B = t => { const u = 1 - t; return [u*u*u*130 + 3*u*u*t*190 + 3*u*t*t*300 + t*t*t*990, u*u*u*215 + 3*u*u*t*560 + 3*u*t*t*640 + t*t*t*680]; };
+  const samp = []; for (let i = 0; i <= 2000; i++) samp.push(B(i / 2000));
+  const yAt = x => { let best = samp[0]; for (const p of samp) if (Math.abs(p[0] - x) < Math.abs(best[0] - x)) best = p; return best[1]; };
+  const dots = []; for (let i = 0; i < 22; i++) { const x = 350 + i * 30; dots.push([x, yAt(x) - 16]); }
+  h += A('fade', 2.6, dots.map(([x,y]) => circ(x,y,9,{fill:C.w, sw:2.5})).join(''));
+  dots.forEach(([x,y], i) => { h += A('pop', 3.0 + i * .13, circ(x,y,9,{fill:C.violet, sw:2.5})); });
+  const [x0,y0] = dots[0], [x1,y1] = dots[dots.length - 1];
+  h += `<g transform="translate(${x0} ${y0 - 58})"><g class="travel" style="--d:2.9s;--x:${x1-x0}px;--y:${(y1-y0).toFixed(1)}px">${U('bot',0,0,.42)}</g></g>`;
+  [[2,'onboarding tracker',506],[8,'quoting tool',540],[14,'planning app',560],[19,'reconciliation tool',520]].forEach(([i,t,ly]) => {
+    const [x,y] = dots[i];
+    h += A('pop', 3.2 + i * .13, T(x,ly,t,{size:18, w:700, anchor:'middle'}) + ln(x,ly+10,x,y-44,{sw:2, stroke:'#9AA5B8'}));
+  });
+  h += A('fade', 6.2, T(1060,214,'Why both sides win',{size:30, w:800}));
+  [['Vendors profitably serve','narrower customer segments'],['Buyers get software adapted','to their own workflows'],['Implementation knowledge','becomes reusable'],['Custom work doesn’t become','a code fork'],['The product improves as','patterns emerge']].forEach(([a,b], k) => {
+    const y = 262 + k * 84;
+    h += A('rise', 6.5 + k * .45, U('i-check',1078,y+2,.9) + T(1106,y+8,a,{size:20, f:'ui', w:700}) + T(1106,y+34,b,{size:20, f:'ui', w:500, fill:C.muted}));
+  });
+  h += A('fade', 9.4, T(120,786,'POTENTIAL WEDGES',{size:14, f:'ui', w:800, ls:2, fill:C.muted}));
+  let x = 120;
+  ['Internal approval & ops tools','Vertical CRM & workflow','Reporting & reconciliation','Back-office tools','Customer portals','AI workflow products'].forEach((t, k) => {
+    const w = Math.round(t.length * 8.4 + 34);
+    h += A('pop', 9.6 + k * .18, rect(x,800,w,44,{rx:22, fill: k === 0 ? C.violetL : C.w, stroke: k === 0 ? C.violet : C.ink, sw:2.5}) + T(x + w / 2, 828, t, {size:16, f:'ui', w:700, anchor:'middle'}));
+    x += w + 12;
+  });
+  return h;
+}
+
+function s11() {
+  let h = A('lift', .2, T(800,214,'CHIPS',{size:150, w:800, anchor:'middle', ls:5}));
+  h += A('draw', .9, pth('M590,244 C720,262 900,234 1010,250',{stroke:C.violet, sw:8}));
+  h += A('lift', .5, T(800,310,'Customization that is safe, tested automatically,',{size:28, f:'ui', w:500, fill:C.muted, anchor:'middle'}) +
+    T(800,348,'and carried forward through upgrades.',{size:28, f:'ui', w:500, fill:C.muted, anchor:'middle'}));
+  h += worlds(.6, 'baker-wave');
+  h += A('draw', 1.6, pth('M450,690 Q800,470 1150,690',{stroke:C.violet, sw:5}));
+  const P = 'M450,690 Q800,470 1150,690';
+  let pk = '';
+  for (let k = 0; k < 3; k++) {
+    pk += `<circle r="8" fill="${C.cocoa}" stroke="${C.ink}" stroke-width="2"><animateMotion dur="2.7s" repeatCount="indefinite" begin="-${(k * .9).toFixed(1)}s" path="${P}"/></circle>`;
+    pk += `<circle r="8" fill="${C.blue}" stroke="${C.ink}" stroke-width="2"><animateMotion dur="2.7s" repeatCount="indefinite" begin="-${(k * .9 + .45).toFixed(2)}s" keyPoints="1;0" keyTimes="0;1" calcMode="linear" path="${P}"/></circle>`;
+  }
+  h += A('fade', 2.6, pk);
+  h += A('drop', 2.2, A('bob', 3.2, U('bot', 0, 0, 1)), 'translate(800 486)');
+  h += sparks([[900,424,.9],[708,452,.6],[892,548,.5]], 2.8);
+  let seed = 7; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  const cols = [C.violet, C.cocoa, C.blue, C.teal, C.amber, C.green, C.caramel];
+  for (let k = 0; k < 42; k++) {
+    const x = Math.round(80 + rnd() * 1440), dx = Math.round((rnd() - .5) * 180), r = Math.round((rnd() - .5) * 900), d = (2.8 + rnd() * 3.4).toFixed(2), du = (3.4 + rnd() * 2.4).toFixed(2);
+    h += `<g transform="translate(${x} -40)"><rect class="conf" x="-5" y="-8" width="10" height="16" rx="2" fill="${cols[k % cols.length]}" style="--d:${d}s;--x:${dx}px;--r:${r}deg;--du:${du}s"/></g>`;
+  }
+  return h;
+}
+
+
+/* ---------- rubric scenes (added) ---------- */
+const markY = (x, y) => U('i-check', x, y, 1.05);
+const markN = (x, y) => circ(x, y, 16, {fill:C.red, sw:2.5}) + `<path d="M${x-6},${y-6} L${x+6},${y+6} M${x+6},${y-6} L${x-6},${y+6}" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+const markP = (x, y) => circ(x, y, 16, {fill:C.amber, sw:2.5}) + `<path d="M${x-7},${y} L${x+7},${y}" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+
+function sEvidence() {
+  let h = A('fade', .2, T(80, 176, 'WHO WE SERVE', {size:16, f:'ui', w:800, ls:2, fill:C.muted}));
+  h += A('inL', .4, rect(80,196,640,196,{rx:22, fill:'#FBF3EA', stroke:C.cocoa, sw:3}) + U('baker-face',160,294,.9) +
+    T(230,246,'BUYERS',{size:15, f:'ui', w:800, ls:2, fill:C.cocoa}) + T(230,288,'Small businesses',{size:30, w:800}) +
+    T(230,324,'1 to 50 people, whose workflow doesn’t fit',{size:20, f:'ui', w:500, fill:C.muted}) + T(230,352,'off-the-shelf software',{size:20, f:'ui', w:500, fill:C.muted}));
+  h += A('inL', 5.6, rect(80,414,640,196,{rx:22, fill:'#EEF4FF', stroke:C.blue, sw:3}) + U('dev-face',160,514,.95) +
+    T(230,464,'SELLERS',{size:15, f:'ui', w:800, ls:2, fill:C.blue}) + T(230,506,'Small software teams',{size:30, w:800}) +
+    T(230,542,'1 to 10 people, a great product, but no',{size:20, f:'ui', w:500, fill:C.muted}) + T(230,570,'sales engineering or services team',{size:20, f:'ui', w:500, fill:C.muted}));
+  h += A('pulse', 18.4, A('fade', 17.4, `<rect x="100" y="650" width="600" height="160" rx="26" fill="${C.violet}" opacity=".35" filter="url(#blur)"/>`));
+  h += A('pop', 17.4, rect(80,636,640,196,{rx:22, fill:C.violetL, stroke:C.violet, sw:4}) + A('bob', 18.2, U('bot',0,0,.5), 'translate(668 694)') +
+    T(110,700,'Big companies hire forward',{size:28, w:800}) + T(110,740,'deployed engineers.',{size:28, w:800}) +
+    T(110,792,'Small vendors can’t. That’s the gap.',{size:28, w:800, fill:C.violet}));
+  h += A('fade', 8.8, T(780, 176, 'WHAT THE RESEARCH SAYS', {size:16, f:'ui', w:800, ls:2, fill:C.muted}));
+  const stats = [
+    {x:780, y:196, n:[0,66,'%'], col:C.red, t:12.0, l:['of software buyers hit regret','or unexpected disruption','after a purchase'], src:'Capterra · Oct 2025 · n = 3,385'},
+    {x:1160, y:196, n:[0,89,'%'], col:C.amber, t:14.4, l:['of regretful buyers first hit','trouble in implementation:','integration, migration, setup'], src:'Capterra · Oct 2025'},
+    {x:780, y:516, n:[0,46,'%'], col:C.blue, t:16.0, l:['of SaaS makers on Freemius','are solo founders, with no','one to scope custom deals'], src:'Freemius · State of Micro-SaaS 2025'},
+    {x:1160, y:516, n:[0,800,'%+'], col:C.violet, t:20.8, l:['growth in forward deployed','engineer job postings,','January to September 2025'], src:'Financial Times, via Fast Company'}];
+  stats.forEach(s => {
+    h += A('pop', s.t, rect(s.x,s.y,360,300,{rx:20, fill:C.w, sw:3}) + rect(s.x+22,s.y+26,56,8,{rx:4, fill:s.col, stroke:'none', r:.3}) +
+      T(s.x+22,s.y+112,cnt(s.n[0],s.n[1],s.t+.2,1.3,s.n[2]),{raw:1, size:78, w:800, fill:s.col}) +
+      s.l.map((l,k) => T(s.x+24,s.y+160+k*30,l,{size:20, f:'ui', w: k < 2 ? 700 : 500, fill: k < 2 ? C.ink : C.muted})).join('') +
+      ln(s.x+22,s.y+250,s.x+338,s.y+250,{sw:1.5, stroke:'#C9D2E0', r:.2}) + T(s.x+24,s.y+280,s.src,{size:14, f:'ui', w:600, fill:C.muted}));
+  });
+  return h;
+}
+
+function sWhy() {
+  let h = '';
+  const cols = [['Finds the right','product'],['Fits the buyer’s','workflow'],['Builds on the','vendor’s product'],['Tested through','upgrades'],['Affordable for','small deals']];
+  const cx = k => 620 + k * 196;
+  h += A('fade', .3, cols.map((c,k) => T(cx(k),178,c[0],{size:18, f:'ui', w:800, anchor:'middle'}) + T(cx(k),202,c[1],{size:18, f:'ui', w:800, anchor:'middle'})).join('') +
+    ln(80,226,1540,226,{sw:3}));
+  const rows = [
+    {n:'Software marketplaces', s:'G2, app stores: stop at the sale', ic:U('i-box',96,0,1.3), v:'YNYNY', t:2.2},
+    {n:'Agencies & freelancers', s:'custom code that forks', ic:U('i-hire',96,0,1.3), v:'NYNNN', t:4.2},
+    {n:'AI app builders', s:'start from scratch, you maintain', ic:U('i-wrench',96,0,1.3), v:'NYNNY', t:6.4},
+    {n:'Human FDE teams', s:'great, for six-figure contracts', ic:U('dev-face',122,26,.62), v:'PYYYN', t:9.6},
+    {n:'CHIPS', s:'the vendor’s product, adapted per customer', ic:U('bot',122,24,.42), v:'YYYYY', t:13.8, ours:1}];
+  rows.forEach((r, k) => {
+    const y = 244 + k * 112;
+    let g = '';
+    if (r.ours) g += `<rect x="70" y="${y-6}" width="1480" height="104" rx="22" fill="${C.violet}" opacity=".3" filter="url(#blur)"/>` + rect(70,y-6,1480,104,{rx:22, fill:C.violetL, stroke:C.violet, sw:4});
+    g += `<g transform="translate(0 ${y+24})">${r.ic}</g>` + T(190,y+44,r.n,{size: r.ours ? 30 : 26, w:800, fill: r.ours ? C.violetD : C.ink}) + T(190,y+74,r.s,{size:17, f:'ui', w:500, fill:C.muted});
+    if (!r.ours) g += ln(80,y+98,1540,y+98,{sw:1.5, stroke:'#C9D2E0', r:.2});
+    h += A('rise', r.t, g);
+    [...r.v].forEach((v, c) => { const x = cx(c), yy = y + 46; h += A('pop', r.t + .35 + c * .12, v === 'Y' ? markY(x,yy) : v === 'N' ? markN(x,yy) : markP(x,yy)); });
+  });
+  h += A('stamp', 16.2, rect(1318,806,220,50,{rx:10, fill:C.w, stroke:C.green, sw:3.5}) + T(1428,840,'ALL FIVE',{size:26, w:800, fill:'#1E7A43', anchor:'middle', ls:2}), 'rotate(-4 1428 831)');
+  h += A('fade', 1.2, `<g transform="translate(96 838)">${markY(0,0)}</g>` + T(122,845,'yes',{size:16, f:'ui', w:600, fill:C.muted}) +
+    `<g transform="translate(190 838)">${markP(0,0)}</g>` + T(216,845,'partly',{size:16, f:'ui', w:600, fill:C.muted}) +
+    `<g transform="translate(300 838)">${markN(0,0)}</g>` + T(326,845,'no',{size:16, f:'ui', w:600, fill:C.muted}));
+  return h;
+}
+
+function sModel() {
+  let h = '';
+  const node = (x, y, w, fill, stroke, face, name, sub, nameCol) => rect(x,y,w,136,{rx:22, fill, stroke, sw:3.5}) + face + T(x+112,y+62,name,{size:30, w:800, fill:nameCol}) + T(x+112,y+94,sub,{size:18, f:'ui', w:500, fill:C.muted});
+  h += A('inL', .3, node(80,190,310,'#FBF3EA',C.cocoa,U('baker-face',140,258,.8),'Cocoa&Co.','the buyer',C.cocoa));
+  h += A('inR', .6, node(560,190,310,'#EEF4FF',C.blue,U('dev-face',620,258,.85),'DataVis','the seller',C.blue));
+  h += A('pop', 1.0, rect(260,560,430,150,{rx:26, fill:C.violetL, stroke:C.violet, sw:4}) + A('bob', 1.8, U('bot',0,0,.55), 'translate(338 632)') +
+    T(410,622,'CHIPS',{size:34, w:800, fill:C.violetD, ls:2}) + T(410,656,'the platform',{size:18, f:'ui', w:500, fill:C.muted}));
+  const p1 = 'M392,258 L556,258', p2 = 'M715,330 C715,450 640,520 600,556';
+  h += A('draw', 1.6, pth(p1,{arrow:1, sw:4, stroke:C.cocoa}));
+  h += A('draw', 2.2, pth(p2,{arrow:1, sw:4, stroke:C.blue}));
+  h += A('pop', 6.4, rect(398,178,152,62,{rx:14, fill:C.w, sw:2.5}) + T(474,206,'$300 / mo',{size:21, w:800, anchor:'middle'}) + T(474,230,'+ $49 care',{size:16, f:'ui', w:700, fill:C.muted, anchor:'middle'}));
+  h += A('pop', 2.6, rect(726,408,170,92,{rx:14, fill:C.w, sw:2.5}) + T(811,440,'15% success',{size:20, w:800, anchor:'middle'}) + T(811,464,'fee, year one',{size:16, f:'ui', w:700, fill:C.muted, anchor:'middle'}) + T(811,488,'+ $49 care fee',{size:16, f:'ui', w:700, fill:C.muted, anchor:'middle'}));
+  const coin = col => `<circle r="13" fill="${col}" stroke="${C.ink}" stroke-width="2.5"/><text y="6" class="ui" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">$</text>`;
+  let cs = '';
+  for (let k = 0; k < 3; k++) {
+    cs += `<g>${coin(C.amber)}<animateMotion dur="1.9s" repeatCount="indefinite" begin="-${(k * .63).toFixed(2)}s" path="${p1}"/></g>`;
+    cs += `<g>${coin(C.green)}<animateMotion dur="2.3s" repeatCount="indefinite" begin="-${(k * .77).toFixed(2)}s" path="${p2}"/></g>`;
+  }
+  h += A('fade', 3.0, cs);
+  h += A('fade', 8.6, T(80,780,'WHY EACH SIDE PAYS',{size:15, f:'ui', w:800, ls:2, fill:C.muted}) +
+    `<circle cx="92" cy="812" r="7" fill="${C.blue}"/>` + T(110,819,'Sellers pay only when a deal closes. No sales engineer to hire.',{size:19, f:'ui', w:600}) +
+    `<circle cx="92" cy="848" r="7" fill="${C.cocoa}"/>` + T(110,855,'Buyers get a tailored tool at a SaaS price, kept working through upgrades.',{size:19, f:'ui', w:600}));
+  h += A('rise', 11.4, rect(960,176,570,560,{rx:22, fill:C.w, sw:3.5}) + T(990,222,'ONE DEAL, YEAR ONE',{size:16, f:'ui', w:800, ls:2, fill:C.muted}) +
+    rect(1370,196,140,34,{rx:17, fill:'#FFF1CF', stroke:C.amber, sw:2}) + T(1440,219,'illustrative',{size:15, f:'ui', w:700, anchor:'middle'}));
+  const rows = [
+    {l:'Cocoa&Co. pays', s:'12 × ($300 plan + $49 care)', v:cnt(0,4188,13.8,1.2,''), pre:'$', col:C.cocoa, t:13.6},
+    {l:'DataVis keeps', s:'revenue it would have turned away', v:cnt(0,3060,16.6,1.2,''), pre:'$', col:C.blue, t:16.4},
+    {l:'We earn', s:'$540 success fee + $588 care fees', v:cnt(0,1128,20.0,1.2,''), pre:'$', col:C.violet, t:19.8},
+    {l:'Engineering hours to close', s:'the agent scopes the deal', v:cnt(9,0,22.0,1,''), pre:'', col:C.green, t:21.8}];
+  rows.forEach((r, k) => {
+    const y = 264 + k * 116;
+    h += A('fade', r.t, T(990,y+30,r.l,{size:26, w:800}) + T(990,y+62,r.s,{size:17, f:'ui', w:500, fill:C.muted}) +
+      T(1500,y+50,`${r.pre}${r.v}`,{raw:1, size:44, w:800, fill:r.col, anchor:'end'}) + (k < 3 ? ln(990,y+92,1500,y+92,{sw:1.5, stroke:'#C9D2E0', r:.2}) : ''));
+  });
+  return h;
+}
+
+function sGTM() {
+  let h = '';
+  const col = (x, n, t, title, d) => A('rise', d, rect(x,172,460,650,{rx:24, fill:C.w, sw:3}) + circ(x+44,222,24,{fill:C.violet, sw:2.5}) +
+    T(x+44,231,String(n),{size:24, w:800, fill:'#fff', anchor:'middle'}) + T(x+84,212,t,{size:15, f:'ui', w:800, ls:2, fill:C.muted}) + T(x+84,244,title,{size:25, w:800}));
+  h += col(70, 1, 'SUPPLY FIRST', '10 design-partner vendors', .3);
+  h += col(570, 2, 'UNLOCK THEIR BACKLOG', 'Turned-away requests', 9.0);
+  h += col(1070, 3, 'MEET BUYERS WHERE THEY SHOP', 'Marketplace listings', 15.0);
+  for (let k = 0; k < 10; k++) { const x = 130 + (k % 5) * 84, y = 332 + Math.floor(k / 5) * 96; h += A('pop', 1.2 + k * .12, U('dev-face', x, y, .62)); }
+  const chip = (x, y, t, d, fill = C.w, stroke = C.ink) => { const w = Math.round(t.length * 8.6 + 36); return [A('pop', d, rect(x,y,w,40,{rx:20, fill, stroke, sw:2.5}) + T(x + w / 2, y + 26, t, {size:16, f:'ui', w:700, anchor:'middle'})), w]; };
+  let x = 96, y = 500;
+  ['Founder communities','Product Hunt launches','MCP tool builders','University startup networks'].forEach((t, k) => {
+    const [g, w] = chip(x, y, t, 3.4 + k * .4); if (x + w > 510) { x = 96; y += 52; }
+    h += chip(x, y, t, 3.4 + k * .4)[0]; x += w + 10;
+  });
+  h += A('pop', 6.2, rect(96,690,408,100,{rx:18, fill:C.violetL, stroke:C.violet, sw:2.5}) + T(120,730,'We run their first deals',{size:22, w:800}) + T(120,764,'ourselves, concierge style',{size:22, w:800, fill:C.violet}));
+  let dots = '';
+  for (let k = 0; k < 100; k++) { const cx0 = 626 + (k % 10) * 36, cy0 = 330 + Math.floor(k / 10) * 36; dots += circ(cx0, cy0, 11, {fill:C.w, sw:2, r:.3}); }
+  h += A('fade', 9.4, dots);
+  for (let k = 0; k < 100; k++) { const cx0 = 626 + (k % 10) * 36, cy0 = 330 + Math.floor(k / 10) * 36; h += A('pop', 9.6 + Math.floor(k / 10) * .38 + (k % 10) * .03, `<circle cx="${cx0}" cy="${cy0}" r="11" fill="${C.cocoa}" stroke="${C.ink}" stroke-width="2"/>`); }
+  h += A('fade', 9.4, T(626,300,'10 vendors × 10 requests each',{size:18, f:'ui', w:700, fill:C.muted}));
+  h += A('pop', 13.2, rect(620,700,360,92,{rx:18, fill:'#FBF3EA', stroke:C.cocoa, sw:2.5}) + T(800,760,`${cnt(0,100,13.4,1.2,'')} buyers`,{raw:1, size:40, w:800, fill:C.cocoa, anchor:'middle'}));
+  x = 1096; y = 300;
+  [['Shopify App Store',C.greenL,C.green],['Google Workspace Marketplace',C.w,C.ink],['Local business groups',C.w,C.ink],['Referrals from live customers',C.w,C.ink]].forEach(([t,f,s], k) => {
+    const w = Math.round(t.length * 8.6 + 36); if (x + w > 1510) { x = 1096; y += 54; }
+    h += chip(x, y, t, 15.6 + k * .45, f, s)[0]; x += w + 10;
+  });
+  h += A('pop', 17.2, U('baker-face',1170,560,.8) + U('baker-face',1290,590,.7) + U('baker-face',1400,556,.76));
+  h += A('pop', 18.2, rect(1096,690,408,100,{rx:18, fill:C.greenL, stroke:C.green, sw:2.5}) + T(1120,730,'Inbound demand,',{size:22, w:800}) + T(1120,764,'then referrals',{size:22, w:800, fill:'#1E7A43'}));
+  return h;
+}
+
+function sNext() {
+  let h = A('rise', .3, rect(80,176,700,470,{rx:18, fill:C.w, sw:3.5}) + ln(80,214,780,214,{sw:2.5}) +
+    `<circle cx="102" cy="195" r="6" fill="#F26B5B"/><circle cx="122" cy="195" r="6" fill="#F4B63F"/><circle cx="142" cy="195" r="6" fill="#39B36B"/>` +
+    T(166,202,'chips prototype',{size:15, f:'ui', w:600, fill:C.muted}));
+  const steps = ['Discover','Match','Sandbox','Scope','Deploy','Live'];
+  steps.forEach((s, k) => { const x = 116 + k * 108; h += A('pop', .9 + k * .45, circ(x,252,13,{fill: k < 5 ? C.violet : C.w, stroke:C.violet, sw:2.5}) + (k < 5 ? tick(x,253,'#fff',.6) : '') + T(x,286,s,{size:15, f:'ui', w:700, anchor:'middle'}) + (k < 5 ? ln(x+16,252,x+92,252,{sw:2.5, stroke:C.violet}) : '')); });
+  h += A('fade', 1.6, rect(104,312,300,300,{rx:14, fill:'#F7F9FC', sw:2}) + T(122,344,'Sandbox: Cocoa&Co.',{size:17, f:'ui', w:800}) + ln(122,586,384,586,{sw:2}));
+  [70,110,90,150,130,184].forEach((hh, k) => { h += A('grow', 2.2 + k * .12, rect(132 + k * 42, 586 - hh, 28, hh, {fill: k === 5 ? C.violet : C.cocoa, sw:2})); });
+  h += A('fade', 2.8, rect(424,312,334,64,{rx:20, fill:'#F6E9DC', stroke:C.cocoa, sw:2}) + T(444,352,'Hide margins from staff',{size:18, f:'ui', w:600, cls:'type', t:3.0, cps:28}));
+  h += A('fade', 4.2, rect(424,392,334,96,{rx:20, fill:C.violetL, stroke:C.violet, sw:2}) + T(444,428,'Permission rule added,',{size:18, f:'ui', w:600, cls:'type', t:4.3, cps:30}) + T(444,460,'2 tests generated ✓',{size:18, f:'ui', w:700, fill:'#1E7A43', cls:'type', t:5.2, cps:30}));
+  h += A('fade', 5.8, rect(424,504,334,108,{rx:14, fill:C.w, sw:2}) + T(444,536,'CSRS · auto-generated',{size:16, f:'ui', w:800}) + ln(444,556,730,556,{sw:2}) + ln(444,576,700,576,{sw:2}) + ln(444,596,650,596,{sw:2}));
+  h += A('pop', 7.2, rect(80,662,700,196,{rx:22, fill:C.violetL, stroke:C.violet, sw:4}) + T(110,702,'WORKING PROTOTYPE',{size:15, f:'ui', w:800, ls:2, fill:C.violet}) +
+    T(110,746,'The full loop, clickable today.',{size:30, w:800}));
+  h += A('fade', 8.4, T(850,190,'WHAT COMES NEXT',{size:16, f:'ui', w:800, ls:2, fill:C.muted}));
+  h += A('draw', 8.6, pth('M880,236 L880,700',{sw:4, stroke:C.violet}));
+  const ms = [
+    {a:'Now', l:['Clickable prototype of the full loop'], t:8.8},
+    {a:'Next 30 days', l:['20 buyer and 20 vendor interviews','to test the problem and our pricing'], t:9.4},
+    {a:'Days 30 to 60', l:['3 concierge pilots with','design-partner vendors'], t:11.6},
+    {a:'By day 90', l:['First paid deployments'], t:13.4}];
+  ms.forEach((m, k) => {
+    const y = 236 + k * 146;
+    h += A('pop', m.t, circ(880,y,16,{fill: k === 0 ? C.violet : C.w, stroke:C.violet, sw:3}) + (k === 0 ? tick(880,y+1,'#fff',.7) : '') +
+      T(916,y+10,m.a,{size:28, w:800}) + m.l.map((l, i) => T(916,y+46+i*28,l,{size:20, f:'ui', w:600, fill: i ? C.muted : C.ink})).join(''));
+  });
+  h += A('fade', 15.6, T(850,790,'WE’LL MEASURE',{size:15, f:'ui', w:800, ls:2, fill:C.muted}));
+  let x = 850;
+  ['Time to go-live','Requests handled without an engineer','Upgrade breakages'].forEach((t, k) => {
+    const w = Math.round(t.length * 8.4 + 34);
+    h += A('pop', 16.0 + k * .35, rect(x,806,w,42,{rx:21, fill: k === 1 ? C.violetL : C.w, stroke: k === 1 ? C.violet : C.ink, sw:2.5}) + T(x + w / 2, 833, t, {size:16, f:'ui', w:700, anchor:'middle'}));
+    x += w + 10;
+  });
+  return h;
+}
+
+const BUILD = [s0,s1,s2,sEvidence,s3,s4,s5,s6,s7,s8,s9,sWhy,sModel,s10,sGTM,sNext,s11];
+const DEMO_SCENE = 15;
+
+/* ---------- hand-drawn conversion (rough.js) ---------- */
+function roughify(svg) {
+  const els = [...svg.querySelectorAll('.r')];
+  const R = window.rough && window.rough.svg ? window.rough.svg(svg) : null;
+  let seed = 11;
+  const NS = 'http://www.w3.org/2000/svg';
+  for (const el of els) {
+    const tag = el.tagName.toLowerCase();
+    const g = n => +el.getAttribute(n) || 0;
+    const stroke = el.getAttribute('stroke') || C.ink, fill = el.getAttribute('fill'), sw = +el.getAttribute('stroke-width') || 3;
+    const dash = el.getAttribute('data-dash');
+    let pts = null, w = 0, hh = 0;
+    if (tag === 'rect') { w = g('width'); hh = g('height'); }
+    else if (tag === 'circle') { w = hh = 2 * g('r'); }
+    else if (tag === 'ellipse') { w = 2 * g('rx'); hh = 2 * g('ry'); }
+    else if (tag === 'line') { pts = [[g('x1'), g('y1')], [g('x2'), g('y2')]]; }
+    else { const n = ((el.getAttribute(tag === 'path' ? 'd' : 'points') || '').match(/-?\d*\.?\d+/g) || []).map(Number); pts = []; for (let i = 0; i + 1 < n.length; i += 2) pts.push([n[i], n[i + 1]]); }
+    if (pts && pts.length) { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]); w = Math.max(...xs) - Math.min(...xs); hh = Math.max(...ys) - Math.min(...ys); }
+    const size = Math.max(w, hh);
+    const arrowHead = () => { if (!el.hasAttribute('data-arrow') || !pts || pts.length < 2) return null; const [px,py] = pts[pts.length - 2], [x,y] = pts[pts.length - 1]; const a = Math.atan2(y - py, x - px), L = 12 + sw * 2.2; return [[x - L * Math.cos(a - .45), y - L * Math.sin(a - .45)], [x, y], [x - L * Math.cos(a + .45), y - L * Math.sin(a + .45)]]; };
+    if (!R) {
+      el.classList.add('rs'); if (!dash) el.setAttribute('pathLength', '100');
+      if (dash) el.setAttribute('stroke-dasharray', dash);
+      const ah = arrowHead();
+      if (ah) { const p = document.createElementNS(NS, 'polyline'); p.setAttribute('points', ah.map(q => q.join(',')).join(' ')); p.setAttribute('fill', 'none'); p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', sw); p.setAttribute('pathLength', '100'); p.setAttribute('class', 'rs ah'); el.after(p); }
+      continue;
+    }
+    const o = {stroke, strokeWidth:sw, roughness: el.hasAttribute('data-r') ? +el.getAttribute('data-r') : (size < 44 ? .45 : size < 140 ? .85 : 1.1),
+      bowing: size < 44 ? .4 : .8, seed: seed++, preserveVertices:true, disableMultiStroke: size < 30, fillStyle: el.getAttribute('data-fs') || 'solid',
+      fillWeight: sw * .5, hachureGap: +(el.getAttribute('data-gap') || 7), hachureAngle: -41};
+    if (fill && fill !== 'none') o.fill = fill;
+    if (dash) o.strokeLineDash = dash.split(/[ ,]+/).map(Number);
+    let n;
+    try {
+      if (tag === 'rect') { const rx = g('rx'); n = rx ? R.path(rrp(g('x'), g('y'), w, hh, rx), o) : R.rectangle(g('x'), g('y'), w, hh, o); }
+      else if (tag === 'circle') n = R.circle(g('cx'), g('cy'), w, o);
+      else if (tag === 'ellipse') n = R.ellipse(g('cx'), g('cy'), w, hh, o);
+      else if (tag === 'line') n = R.line(pts[0][0], pts[0][1], pts[1][0], pts[1][1], o);
+      else if (tag === 'polygon') n = R.polygon(pts, o);
+      else if (tag === 'polyline') n = R.linearPath(pts, o);
+      else n = R.path(el.getAttribute('d'), o);
+    } catch (e) { el.classList.add('rs'); continue; }
+    for (const p of [...n.children]) {
+      const isStroke = p.getAttribute('fill') === 'none' && p.getAttribute('stroke') === stroke && +p.getAttribute('stroke-width') === sw;
+      p.classList.add(isStroke ? 'rs' : 'rf');
+      if (isStroke && !dash) p.setAttribute('pathLength', '100');
+    }
+    const ah = arrowHead();
+    if (ah) { const hn = R.linearPath(ah, {stroke, strokeWidth:sw, roughness:.4, bowing:.3, seed: seed++}); for (const p of [...hn.children]) { p.classList.add('rs', 'ah'); p.setAttribute('pathLength', '100'); n.appendChild(p); } }
+    const cls = (el.getAttribute('class') || '').split(/\s+/).filter(c => c && c !== 'r');
+    if (cls.length) n.setAttribute('class', cls.join(' '));
+    for (const a of ['opacity', 'transform', 'id']) if (el.hasAttribute(a)) n.setAttribute(a, el.getAttribute(a));
+    el.replaceWith(n);
+  }
+}
+
+/* ---------- player engine ---------- */
+const stage = $('#stage'), screen = $('#screen'), cta = $('#cta'), ctaT = $('#ctaT'), narr = $('#narr');
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const total = () => SCN.reduce((a, s, i) => a + dur(i), 0);
+const fmt = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const setMeta = () => { $('#meta').textContent = `An animated pitch · ${SCN.length} scenes · ${fmt(total())}${HAS_VO ? ' · narrated' : ''}`; };
+setMeta();
+let scenes = [], segs = [], chaps = [];
+let cur = -1, playing = true, started = false, ended = false, clock = 0, lastTs = null, jobs = [], autoPaused = false;
+const outT = new Map();
+
+/* voice: ONE audio element, unlocked by the viewer's first tap and reused for every scene, so later clips
+   may start on their own (and iPhones play it even with the ringer switch on silent). The scene waits
+   for its line to finish. If a clip can't load, the browser's own voice reads the caption. */
+const VO_SRC = i => `vo/s${String(i).padStart(2, '0')}.mp3`;
+const voEl = HAS_VO ? new Audio() : null;
+if (voEl) { voEl.preload = 'auto'; }
+if (HAS_VO) SCN.forEach((_, i) => { fetch(VO_SRC(i)).catch(() => {}); }); // warm the cache
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+let voDone = true, voIdx = -1, voTok = 0;
+function sndPrompt(show) { const b = $('#snd'); if (b) b.hidden = !show; }
+function voStop() {
+  voTok++;
+  if (voEl) { try { voEl.pause(); } catch (e) {} }
+  try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
+}
+function speak(i) {
+  try {
+    if (!('speechSynthesis' in window)) { voDone = true; return; }
+    const u = new SpeechSynthesisUtterance(SCN[i].narr);
+    u.onend = u.onerror = () => { if (voIdx === i) voDone = true; };
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) { voDone = true; }
+}
+function voPlayNow(i, tok) {
+  const p = voEl.play();
+  if (p && p.catch) p.catch(err => {
+    if (tok !== voTok) return;
+    if (err && err.name === 'NotAllowedError') { voDone = true; sndPrompt(true); }   // blocked: keep the film moving, offer a tap
+    else if (err && err.name !== 'AbortError') speak(i);
+  });
+}
+function voStart(i) {
+  voStop(); voIdx = i; voDone = true;
+  if (!narrOn || !started || !HAS_VO) return;
+  voDone = false;
+  const tok = voTok;
+  voEl.onended = () => { if (tok === voTok) voDone = true; };
+  voEl.onerror = () => { if (tok === voTok && !voDone) speak(i); };
+  voEl.src = VO_SRC(i);
+  voPlayNow(i, tok);
+}
+function unlockSound() {            // called from the "Tap for sound" button
+  sndPrompt(false);
+  if (!HAS_VO) return;
+  if (!narrOn) { narrOn = true; updateVoBtn(); }
+  voStart(cur);
+}
+function voPause() { if (voEl && !voEl.paused) voEl.pause(); try { window.speechSynthesis && speechSynthesis.pause(); } catch (e) {} }
+function voResume() {
+  if (!narrOn || voDone || !voEl) return;
+  if (voEl.paused && !voEl.ended) voPlayNow(voIdx, voTok);
+  try { window.speechSynthesis && speechSynthesis.resume(); } catch (e) {}
+}
+function updateVoBtn() {
+  const b = $('#vo'); if (!b) return;
+  b.hidden = !HAS_VO;
+  b.setAttribute('aria-pressed', String(narrOn));
+  b.setAttribute('aria-label', narrOn ? 'Turn narration off' : 'Turn narration on');
+  $('#voIcon').setAttribute('d', narrOn ? 'M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z'
+    : 'M4 9v6h4l5 4V5L8 9H4zm12.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z');
+}
+function toggleVo() {
+  if (!HAS_VO) return;
+  sndPrompt(false);
+  narrOn = !narrOn;
+  if (!narrOn) { voStop(); voDone = true; } else if (started && playing) voStart(cur);
+  updateVoBtn(); setMeta();
+  segs.forEach((f, i) => f.parentNode.style.setProperty('--w', dur(i)));
+  chaps.forEach((c, i) => { c.querySelector('.ch-d').textContent = Math.round(dur(i)) + 's'; });
+}
+
+function build() {
+  let html = `<defs>${DEFS()}</defs><rect width="1600" height="900" fill="${C.paper}"/><rect width="1600" height="900" fill="url(#grid)"/><rect width="1600" height="900" fill="url(#grid5)"/>`;
+  BUILD.forEach((b, i) => { html += `<g class="sc" id="sc${i}">${i > 0 && i < SCN.length - 1 ? actLabel(i) : ''}${b()}</g>`; });
+  stage.innerHTML = html;
+  roughify(stage);
+  scenes = [...stage.querySelectorAll('.sc')];
+}
+
+function prep(sc) {
+  jobs = [];
+  sc.querySelectorAll('.type').forEach(el => {
+    if (el.dataset.full == null) el.dataset.full = el.textContent;
+    const full = el.dataset.full;
+    if (RM) { el.textContent = full; return; }
+    el.textContent = '';
+    const cps = +(el.dataset.cps || 30);
+    jobs.push({t0: +el.dataset.t * 1000, d: full.length / cps * 1000, fn: p => { el.textContent = full.slice(0, Math.round(full.length * p)); }});
+  });
+  sc.querySelectorAll('.count').forEach(el => {
+    const a = +el.dataset.from, b = +el.dataset.to, suf = el.dataset.suf || '', f = v => Math.round(v).toLocaleString('en-US') + suf;
+    if (RM) { el.textContent = f(b); return; }
+    el.textContent = f(a);
+    jobs.push({t0: +el.dataset.t * 1000, d: (+el.dataset.dur || 1) * 1000, fn: p => { el.textContent = f(a + (b - a) * (1 - Math.pow(1 - p, 3))); }});
+  });
+}
+function runJobs() {
+  for (const j of jobs) { if (j.done || clock < j.t0) continue; const p = Math.min(1, (clock - j.t0) / Math.max(1, j.d)); j.fn(p); if (p >= 1) j.done = true; }
+}
+
+function go(i) {
+  i = Math.max(0, Math.min(scenes.length - 1, i));
+  const prev = scenes[cur], next = scenes[i];
+  if (prev && prev !== next) {
+    prev.classList.remove('on'); prev.classList.add('out');
+    clearTimeout(outT.get(prev)); outT.set(prev, setTimeout(() => prev.classList.remove('out'), 600));
+  }
+  clearTimeout(outT.get(next));
+  next.classList.remove('on', 'out');
+  void document.body.offsetHeight;
+  next.classList.add('on');
+  cur = i; clock = 0; ended = false;
+  prep(next); runJobs();
+  voStart(i);
+  $('#nowN').textContent = i === 0 ? 'Title' : i === SCN.length - 1 ? 'Close' : `Act ${i} of ${SCN.length - 2}`;
+  $('#nowT').textContent = SCN[i].title;
+  narr.classList.remove('show'); void narr.offsetWidth; narr.textContent = SCN[i].narr; narr.classList.add('show');
+  chaps.forEach((c, k) => { if (k === i) c.setAttribute('aria-current', 'step'); else c.removeAttribute('aria-current'); });
+  $('#demo').hidden = i !== DEMO_SCENE;
+  updateCta(); updatePlay();
+}
+function setPlaying(p) {
+  playing = p;
+  stage.classList.toggle('paused', !p);
+  try { if (p && !RM) stage.unpauseAnimations(); else stage.pauseAnimations(); } catch (e) {}
+  if (p) voResume(); else voPause();
+  updatePlay();
+}
+function updatePlay() {
+  const icon = $('#playIcon'), btn = $('#play');
+  if (ended) { icon.setAttribute('d', 'M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z'); btn.setAttribute('aria-label', 'Watch again'); }
+  else if (playing && !(cur === 0 && !started)) { icon.setAttribute('d', 'M7 5h4v14H7zM13 5h4v14h-4z'); btn.setAttribute('aria-label', 'Pause'); }
+  else { icon.setAttribute('d', 'M8 5v14l11-7z'); btn.setAttribute('aria-label', 'Play'); }
+}
+function updateCta() {
+  const show = (cur === 0 && !started) || ended;
+  cta.hidden = !show;
+  ctaT.textContent = ended ? 'Watch again' : 'Play the story';
+}
+function jump(i) { started = true; setPlaying(true); go(i); }
+function toggle() {
+  if (ended) { jump(0); return; }
+  if (cur === 0 && !started) { jump(HAS_VO ? 0 : 1); return; }
+  setPlaying(!playing);
+}
+
+function progress() {
+  const d = dur(cur) * 1000, f = Math.min(1, clock / d);
+  segs.forEach((s, j) => { s.style.transform = `scaleX(${j < cur ? 1 : j > cur ? 0 : f})`; });
+  let before = 0; for (let j = 0; j < cur; j++) before += dur(j);
+  $('#time').textContent = `${fmt(before + Math.min(clock, d) / 1000)} / ${fmt(total())}`;
+}
+function frame(ts) {
+  const dt = lastTs == null ? 0 : Math.min(80, ts - lastTs); lastTs = ts;
+  if (playing && cur >= 0 && !ended) {
+    const d = dur(cur) * 1000;
+    clock += dt; runJobs();
+    if (clock > d + 9000) voDone = true; // never wait forever on a stalled clip
+    if (clock >= d && (voDone || !narrOn)) {
+      if (cur === 0 && !started) { /* hold on the title until the viewer starts */ }
+      else if (cur < scenes.length - 1) go(cur + 1);
+      else { ended = true; updateCta(); updatePlay(); }
+    }
+  }
+  if (cur >= 0) progress();
+  requestAnimationFrame(frame);
+}
+
+function ui() {
+  const bar = $('#bar'), list = $('#chapters');
+  SCN.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'seg'; b.type = 'button'; b.style.setProperty('--w', dur(i)); b.title = s.title;
+    b.setAttribute('aria-label', `Go to scene ${i + 1}: ${s.title}`);
+    const f = document.createElement('i'); b.appendChild(f); segs.push(f);
+    b.addEventListener('click', () => jump(i));
+    bar.appendChild(b);
+    const li = document.createElement('li');
+    const c = document.createElement('button');
+    c.type = 'button'; c.className = 'ch';
+    c.innerHTML = `<span class="ch-n">${i === 0 ? 'Title' : i === SCN.length - 1 ? 'Close' : 'Act ' + i}</span><span class="ch-d">${Math.round(dur(i))}s</span><span class="ch-t">${esc(s.title)}</span>`;
+    c.addEventListener('click', () => { jump(i); $('#player').scrollIntoView({behavior: RM ? 'auto' : 'smooth', block:'start'}); });
+    li.appendChild(c); list.appendChild(li); chaps.push(c);
+  });
+  $('#play').addEventListener('click', toggle);
+  $('#next').addEventListener('click', () => { if (cur < scenes.length - 1) jump(cur + 1); });
+  $('#prev').addEventListener('click', () => jump(cur - 1));
+  $('#vo').addEventListener('click', toggleVo);
+  updateVoBtn();
+  cta.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+  $('#demo').addEventListener('click', e => { e.stopPropagation(); if (playing) setPlaying(false); });
+  $('#snd').addEventListener('click', e => { e.stopPropagation(); unlockSound(); });
+  screen.addEventListener('click', toggle);
+  const fsBtn = $('#fs');
+  if (!document.fullscreenEnabled) fsBtn.hidden = true;
+  const fs = () => { try { if (document.fullscreenElement) document.exitFullscreen(); else $('#player').requestFullscreen().catch(() => {}); } catch (e) {} };
+  fsBtn.addEventListener('click', fs);
+  document.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    if (e.key === ' ' || e.key === 'k') { if (tag === 'button') return; e.preventDefault(); toggle(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); if (cur < scenes.length - 1) jump(cur + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); jump(cur - 1); }
+    else if (e.key === 'f' || e.key === 'F') fs();
+    else if (e.key === 'm' || e.key === 'M') toggleVo();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && playing) { autoPaused = true; setPlaying(false); }
+    else if (!document.hidden && autoPaused) { autoPaused = false; setPlaying(true); }
+  });
+}
+
+function start() {
+  build(); ui();
+  if (RM) { try { stage.pauseAnimations(); } catch (e) {} }
+  go(0);
+  requestAnimationFrame(frame);
+}
+const fontsReady = document.fonts ? Promise.all([
+  document.fonts.load('800 40px "Shantell Sans"'), document.fonts.load('700 40px "Shantell Sans"'),
+  document.fonts.load('600 20px Figtree'), document.fonts.load('600 15px "JetBrains Mono"')]).catch(() => {}) : Promise.resolve();
+Promise.race([fontsReady, new Promise(r => setTimeout(r, 1800))]).then(start);
+})();
+</script>
+
+</body></html>
